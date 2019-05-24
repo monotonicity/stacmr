@@ -6,7 +6,7 @@ Authors@R: c(
           person(given="Luke", family="Finlay", role=c("aut")),
           person(given="Henrik", family="Singmann", role=c("aut", "cre"),
           email="singmann@gmail.com", comment=c(ORCID="0000-0002-4842-3657")),
-          person(given="Michael L.", family="Kalish", role=c("ctb")),
+          person(given="Michael L.", family="Kalish", role=c("ctb"))
             )
 Description: Set of R functions that implement the Conjoint Monotonic Regression (CMR) approach to State-Trace Analysis (STA)
 Depends: R (>= 2.7.0), rJava (>= 0.5-0)
