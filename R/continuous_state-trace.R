@@ -9,15 +9,15 @@
 #' partial order and returns the best fitting values (to the data means) and the
 #' least squares fit. It fits the monotonic model to the data.
 #' 
+#' `test_cmr`  estimates the empirical distribution (and hence *p*-value) of
+#' the difference in the fit of the conjoint monotonic and the fit of the
+#' partial order model.
+#' 
 #' `fit_mr` conducts monotonic regression on a data structure according to a
 #' given partial order. It fits the partial order model to the data (i.e., the
 #' set of dependent variables).
 #' 
-#' `staMRFIT` tests the fit of the partial order model.
-#' 
-#' `staCMRFIT`  estimates the empirical distribution (and hence *p*-value) of
-#' the difference in the fit of the conjoint monotonic and the fit of the
-#' partial order model.
+#' `test_mr` tests the fit of the partial order model.
 #' 
 #' 
 #' @param  data `data.frame` containing data aggregated by participant and relevant variables
@@ -28,7 +28,7 @@
 #' @param col_within `character`. Name of column in `data` containing the within-subjects variables.
 #' @param col_between `character`, optional. Name of column in `data` containing the between-subjects variables.
 #' @param partial is a partial order in either list or adjacency matrix format.
-#' @param  shrink Shrinkage parameter (see [staSTATS]). Default calculates
+#' @param  shrink Shrinkage parameter (see [sta_stats]). Default calculates
 #'   optimum amount of shrinkage.
 #' @param approx `FALSE` (the default) uses full algorithm, `TRUE` uses an
 #'   approximate algorithm.
@@ -94,17 +94,17 @@ test_cmr <- function (data,
   # approximation option added 17 September 2018
   # *************************************************************************
   
-    ## bring data in general format
-  data <- prep_data(data = data, 
-                    col_value = col_value, 
-                    col_participant = col_participant, 
-                    col_dv = col_dv, 
-                    col_within = col_within, 
-                    col_between = col_between)
+  ## bring data in list format
+  y <- prep_data(data = data, 
+                 col_value = col_value, 
+                 col_participant = col_participant, 
+                 col_dv = col_dv, 
+                 col_within = col_within, 
+                 col_between = col_between)
   
-  if (is(data,"data.frame")) {
-    y = gen2list (data) # convert from general format to list format
-  } else {y = data} 
+  # if (is(data,"data.frame")) {
+  #   y = gen2list (data) # convert from general format to list format
+  # } else {y = data} 
   
   proc = -1
   cheapP = F
@@ -147,20 +147,21 @@ fit_mr <- function(data,
   # *************************************************************************
   #
   
-  ## bring data in general format
+  ## bring data in list format
   data <- prep_data(data = data, 
                     col_value = col_value, 
                     col_participant = col_participant, 
                     col_dv = col_dv, 
                     col_within = col_within, 
                     col_between = col_between)
+  y = staSTATS (data, shrink) # get stats
   
-  # get stats from data (depending on its form)
-  if (is(data,"data.frame")) {
-    y = gen2list (data) # convert from general format
-    y = staSTATS (y, shrink) # get stats
-  } else if (is.null(data[[1]]$means)) {y = staSTATS(data, shrink) # in list form, get stats
-  } else {y = data} # already in stats form
+  # # get stats from data (depending on its form)
+  # if (is(data,"data.frame")) {
+  #   y = gen2list (data) # convert from general format
+  #   y = staSTATS (y, shrink) # get stats
+  # } else if (is.null(data[[1]]$means)) {y = staSTATS(data, shrink) # in list form, get stats
+  # } else {y = data} # already in stats form
   
   # convert partial order to list if in adjacency matrix form
   if (is(partial,"matrix")) {partial = adj2list(partial)}
@@ -213,17 +214,17 @@ test_mr <- function (data,
   # converted from matlab 7 February 2018
   # *************************************************************************
   
-  ## bring data in general format
-  data <- prep_data(data = data, 
+  ## bring data in list format
+  y <- prep_data(data = data, 
                     col_value = col_value, 
                     col_participant = col_participant, 
                     col_dv = col_dv, 
                     col_within = col_within, 
                     col_between = col_between)
 
-  if (is(data,"data.frame")) {
-    y = gen2list (data) # convert from general format to list format
-  } else {y = data} 
+  # if (is(data,"data.frame")) {
+  #   y = gen2list (data) # convert from general format to list format
+  # } else {y = data} 
   
   nvar =length(y)
   if (!is.list(partial)) {partial = adj2list(partial)} # convert from adjacency matrix to list

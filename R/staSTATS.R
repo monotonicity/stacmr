@@ -1,9 +1,7 @@
-#' Statistics for state trace analysis
+#' Statistics for state-Trace Analysis
 #' 
 #' Calculates statistics for state trace analysis.
 #' 
-#' @param data A `list` of `lists` (returned from [gen2list]) containing
-#'   `nsub` x `ncond` matrices
 #' @param varnames An optional `list` of names of within-participant conditions
 #' @param shrink numeric indicating amount of shrinkage to apply to the
 #'   estimated covariance matrix. Generally, the covariance matrix needs to be
@@ -15,11 +13,29 @@
 #'   applied according to an algorithm developed by Ledoit and Wolf (2004).
 #' @param if warning is `TRUE` then a warning is thrown if `NA`s are detected.
 #'   Default is `FALSE`.
+#'   
+#' @return A list 
 #' 
 #' @references Ledoit, O. & Wolf, M. (2004). Honey, I shrunk the sample
 #'   covariance matrix. *The Journal of Portfolio Management*, 30(4), 110-119.
 #' 
+#' @inheritParams fit_cmr
+#' 
 #' @export
+sta_stats <- function(data, 
+                     col_value, col_participant, col_dv, col_within, 
+                     col_between, 
+                     shrink=-1, warning=FALSE) {
+    y <- prep_data(data = data, 
+                 col_value = col_value, 
+                 col_participant = col_participant, 
+                 col_dv = col_dv, 
+                 col_within = col_within, 
+                 col_between = col_between)
+    staSTATS(y, shrink=shrink, warning=warning)
+}
+
+
 staSTATS <- function(data, shrink=-1, varnames, warning=FALSE) {
   ## Calculates statistics for state trace analysis
   ##
@@ -42,9 +58,9 @@ staSTATS <- function(data, shrink=-1, varnames, warning=FALSE) {
   #if (missing(shrink)) {shrink = -1}
   #if (missing(warning)) {warning = 0}
   
-  y <- data
-  
-  if (is(y, "data.frame")) {y = gen2list(y, varnames)} # convert from general to list format if req'd
+  if (is(y, "data.frame")) {
+    y = gen2list(y, varnames)
+  } # convert from general to list format if req'd
   ngroup = length(y); nvar = length(y[[1]])
   
   output = vector("list", nvar)

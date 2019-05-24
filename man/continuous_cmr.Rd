@@ -37,7 +37,7 @@ variable(s) spanning the state-trace axes.}
 
 \item{partial}{is a partial order in either list or adjacency matrix format.}
 
-\item{shrink}{Shrinkage parameter (see \link{staSTATS}). Default calculates
+\item{shrink}{Shrinkage parameter (see \link{sta_stats}). Default calculates
 optimum amount of shrinkage.}
 
 \item{approx}{\code{FALSE} (the default) uses full algorithm, \code{TRUE} uses an
@@ -54,15 +54,15 @@ for continuous data. It takes the data as a \code{data.frame} and an optional
 partial order and returns the best fitting values (to the data means) and the
 least squares fit. It fits the monotonic model to the data.
 
+\code{test_cmr}  estimates the empirical distribution (and hence \emph{p}-value) of
+the difference in the fit of the conjoint monotonic and the fit of the
+partial order model.
+
 \code{fit_mr} conducts monotonic regression on a data structure according to a
 given partial order. It fits the partial order model to the data (i.e., the
 set of dependent variables).
 
-\code{staMRFIT} tests the fit of the partial order model.
-
-\code{staCMRFIT}  estimates the empirical distribution (and hence \emph{p}-value) of
-the difference in the fit of the conjoint monotonic and the fit of the
-partial order model.
+\code{test_mr} tests the fit of the partial order model.
 }
 \examples{
 
