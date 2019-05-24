@@ -1,6 +1,7 @@
+# function is INTERNAL
 #' Data formats
-#' @rdname data_formats
-#' @aliases data_formats
+# @rdname data_formats
+# @aliases data_formats
 #' 
 #' @description \pkg{STACMR} accepts two kinds of data structure, **list
 #'   format** and **general format**. `gen2list` transforms from the general
@@ -35,8 +36,9 @@
 #' @return `gen2list` returns a `ngroup` x `nvar` `list` in which each element
 #'   is an `nsub` x `ncond` matrix of values
 
-#' @rdname data_formats
-#' @export
+
+# @rdname data_formats
+# @export
 gen2list = function (data=NULL, varnames) {
 # gen2cell(data)
   # R version of gen2cell.m
@@ -74,4 +76,60 @@ gen2list = function (data=NULL, varnames) {
   }
   return (y)
 }
+
+is.wholenumber <- function(x, tol = .Machine$double.eps^0.5)  {
+  if (is.numeric(x)) all(abs(x - round(x)) < tol)
+  else FALSE
+  }
+
+check_col <- function(data, col, factor_int = FALSE) {
+  col_tested <- deparse(substitute(col))
+  if (!all(col %in% colnames(data))) {
+    not_in <- col[!(col %in% colnames(data))]
+    stop(col_tested, " '",not_in,  "' not in data.", call. = FALSE)
+  }
+  if (factor_int) {
+    fac <- vapply(col, function(x) is.factor(data[[x]]), NA)
+    int <- vapply(col, function(x) is.wholenumber(data[[x]]), NA) |
+      vapply(col, function(x) is.integer(data[[x]]), NA)
+    if (length(col) == 1 & !(fac | int)) {
+      stop(col_tested, " '", not_in,  "' is neither factor nor integer variable.", call. = FALSE)
+    } else if (length(col) > 1 & all(fac)) {
+      message("Combining ", length(col), " ", col_tested, " factors.")
+      data[[col[1]]] <- interaction(data[col])
+    } else if (length(col) > 1 & (any(int) | any(fac))) {
+      stop(col_tested, " of length 1 is only supported if all columns are factors.", call. = FALSE)
+    } else if (!(any(int) | any(fac))) {
+      stop(col_tested, " is not of supported type (factor or integer).", call. = FALSE)
+    }
+    data[[col[1]]] <- as.numeric(as.factor(data[[col[1]]]))
+  } else {
+    if (length(col) > 1) {
+      stop(col_tested, " needs to be of length 1 (is ", length(col), ").", call. = FALSE)
+    }
+  }
+  data
+}
+
+prep_data <- function(data, col_value, col_participant, col_dv, col_within, col_between) {
+  ## check if all columns are in data and concatenate in one, if longer than 1
+  data <- check_col(data, col_value)
+  data <- check_col(data, col_participant, TRUE)
+  col_participant <- col_participant[1]
+  data <- check_col(data, col_dv, TRUE)
+  col_dv <- col_dv[1]
+  data <- check_col(data, col_within, TRUE)
+  col_within <- col_within[1]
   
+  if (missing(col_between)) {
+    col_between <- "___NEWCOLSTACMR__"
+    data[[col_between]] <- 1L
+  } else {
+    data <- check_col(data, col_between, TRUE)
+    col_between <- col_between[1]
+  }
+  
+  newd <- data[,c(col_participant, col_between, col_dv, col_within, col_value)]
+  d_gen <- tidyr::spread(newd, col_within, col_value)
+  return(gen2list(d_gen))
+}

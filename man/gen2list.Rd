@@ -2,7 +2,6 @@
 % Please edit documentation in R/gen2list.R
 \name{gen2list}
 \alias{gen2list}
-\alias{data_formats}
 \title{Data formats}
 \usage{
 gen2list(data = NULL, varnames)

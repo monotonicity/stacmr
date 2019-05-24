@@ -4,7 +4,7 @@
 \name{delay}
 \alias{delay}
 \title{Experiment 1 of Dunn, Newell, & Kalish (2012)}
-\format{An object of class \code{data.frame} with 130 rows and 7 columns.}
+\format{An object of class \code{data.frame} with 520 rows and 5 columns.}
 \source{
 Dunn, J. C., Newell, B. R., & Kalish, M. L. (2012). The effect of
 feedback delay and feedback type on perceptual category learning: The
@@ -16,71 +16,119 @@ Learning, Memory, and Cognition}, 38(4), 840-859.
 delay
 }
 \description{
-Participants in this study completed one of two category-learning tasks over
-4 blocks of training (a within-participant factor) under one of 2 different
-conditions (a between-participant factor). The dependent variables are the
-proportions correct for each of two tasks defined according to the category
-structure that participants learned. For the rule-based (RB) group, the cate-
-gory structure was defined by a simple rule. For the information-integration
-(II) group, the category structure was more complex and could not be defined
-by a simple rule.
+Data from 130 \code{participant}s with two between-participants factors (\code{delay}
+and \code{structure}) with two levels each and one within-participants factor
+(\code{block}) with four levels. The dependent variable is proportion correct
+\code{pc}.
+}
+\details{
+Participants in this study completed one of two category-learning tasks
+defined according to the category \code{structure} that participants learned. For
+the rule-based (RB) group, the category structure was defined by a simple
+rule. For the information-integration (II) group, the category structure was
+more complex and could not be defined by a simple rule.
+
+The experiment consisted of four 80-trial \code{block}s for each participant. Within each block, all 80
+stimuli were presented in a random order (with different orders for each
+participant). Participants were told to learn which of four categories (labeled,
+1, 2, 3, and 4) each stimulus belonged to. On each trial, a stimulus was
+presented, and participants terminated the display by pressing one of the
+keys labeled 1–4 on the computer keyboard corresponding to Categories 1–4,
+respectively. Following the response, a mask appeared. The length with which
+the mask was shown defined the \code{delay} condition. Either 0.5-s (No Delay
+condition) or 5-s (Delay condition).
+
+Following presentation of the mask, feedback appeared on the computer screen
+for 0.75 s. If the response was correct, the word “Correct” was presented;
+otherwise, the word “Incorrect” was presented.  Following presentation of
+feedback, a blank screen followed the duration of which was again defined the
+\code{delay} condition. The screen was blank for either 5 s (No Delay condition)
+or 0.5 s (Delay condition) before the next trial commenced. The sequence and
+timing of these events were same as those used by Maddox and Ing (2005).
 }
 \examples{
 
-library("STACMR")
+library("stacmr")
 
 ## load data from Exp. 1 of Dunn, Newell, & Kalish (2012)
 data(delay)
-head(delay)
+str(delay, width = 78, strict.width = "cut")
+# 'data.frame':	520 obs. of  5 variables:
+#  $ participant: Factor w/ 130 levels "1","2","3","4",..: 1 2 3 4 5 6 7 8 9 1..
+#  $ delay      : Factor w/ 2 levels "no delay","delay": 2 1 1 2 2 1 1 2 2 2 ...
+#  $ structure  : Factor w/ 2 levels "rule-based","information-integration": 1..
+#  $ block      : Factor w/ 4 levels "B1","B2","B3",..: 1 1 1 1 1 1 1 1 1 1 ...
+#  $ pc         : num  0.338 0.287 0.525 0.35 0.237 ...
 
-y <- gen2list(data=delay)
-str(y, 2)
+### Fit CMR State-Trace Analysis Model
+fit1 <- fit_cmr(data=delay, col_value = "pc", 
+                col_participant = "participant",
+                col_dv = "structure", 
+                col_within = "block", 
+                col_between = "delay")
+cbind(fit1$x[[1]], fit1$x[[2]])
+fit1$fval
+fit1$shrinkage
 
-delaystats <- staSTATS(delay)
-str(delaystats)
 
-delaystats[[1]]$means
+### Test CMR State-Trace Analysis
+test1 <- test_cmr(data=delay, col_value = "pc", 
+                  col_participant = "participant",
+                  col_dv = "structure", 
+                  col_within = "block", 
+                  col_between = "delay")
+test1
 
-delaystats[[2]]$means
 
-staPLOT(data = delay, 
-        groups = list(c(1:4), c(5:8)), 
-        grouplabels = list("No delay", "Delay"), 
-        axislabels = list("RB","II"))
-
+#### Fit and specify partial order that should be obeyed by data
+# Create Partial Order
+E <- list(c(1:4),c(5:8),c(5,1),c(6,2),c(7,3),c(8,4))
 
 ### Fits Partial Order Model to Data
-# create partial order
-E <- list(c(1:4),c(5:8),c(5,1),c(6,2),c(7,3),c(8,4))
-out2 <- staMR(data=delay, partial=E)
-
-cbind(out2$x[[1]],out2$x[[2]]) # simplify presentation
-out2$fval
-out2$shrinkage
-
-### Conduct CMR State-Trace Analysis
-out1 <- staCMR(data=delay, partial=E)
-
-cbind(out1$x[[1]],out1$x[[2]])
-out1$fval
-out1$shrinkage
-
-staPLOT(data = delay, 
-        groups = list(c(1:4), c(5:8)), 
-        grouplabels = list("No delay", "Delay"), 
-        axislabels = list("RB","II"),
-        pred=out1$x)
+fit2 <- fit_mr(data=delay, col_value = "pc", 
+               col_participant = "participant",
+               col_dv = "structure", 
+               col_within = "block", 
+               col_between = "delay",
+               partial=E)
+cbind(fit2$x[[1]],fit2$x[[2]]) # simplify presentation
+fit2$fval
+fit2$shrinkage
 
 ### Test fit of Partial Order Model
+test2 <- fit_mr(delay, partial=E, nsample=10000)
+test2$p
+test2$datafit
 
-out3 <- staMRFIT(delay, partial=E, nsample=10000)
-out3$p
-out3$datafit
-
+#### test conjoint model versus partial order model
 ### p-Value of Difference in Fit of Conjoint Monotonic and Fit of Partial Order Model
-out4 <- staCMRFIT(delay, partial=E, nsample=10000)
-out4$p
-out4$datafit
+test3 <- test_cmr(data=delay, col_value = "pc", 
+                  col_participant = "participant",
+                  col_dv = "structure", 
+                  col_within = "block", 
+                  col_between = "delay", 
+                  partial=E, nsample=10000)
+test3$p
+test3$datafit
 
+
+# staPLOT(data = delay, 
+#         groups = list(c(1:4), c(5:8)), 
+#         grouplabels = list("No delay", "Delay"), 
+#         axislabels = list("RB","II"),
+#         pred=out1$x)
+
+
+
+
+
+
+}
+\references{
+Maddox, W. T., & Ing, A. D. (2005). Delayed Feedback Disrupts the
+Procedural-Learning System but Not the Hypothesis-Testing System in
+Perceptual Category Learning. \emph{Journal of Experimental Psychology: Learning,
+Memory, and Cognition}, 31(1), 100-107.
+\url{https://doi.org/10.1037/0278-7393.31.1.100}
 }
 \keyword{datasets}
