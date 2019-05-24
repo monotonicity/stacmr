@@ -7,7 +7,7 @@ document()
 
 ### packages
 use_package("magic")
-use_package("ggplot2")
+use_package("tidyr")
 
 ### setup
 

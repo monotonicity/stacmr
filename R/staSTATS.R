@@ -14,7 +14,8 @@
 #' @param if warning is `TRUE` then a warning is thrown if `NA`s are detected.
 #'   Default is `FALSE`.
 #'   
-#' @return A list 
+#' @return A list with the following slots:
+#' - 
 #' 
 #' @references Ledoit, O. & Wolf, M. (2004). Honey, I shrunk the sample
 #'   covariance matrix. *The Journal of Portfolio Management*, 30(4), 110-119.

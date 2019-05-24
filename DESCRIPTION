@@ -14,6 +14,7 @@ SystemRequirements: Java (>= 1.5)
 License: GPL-2
 Imports: 
     magic,
-    ggplot2
+    ggplot2,
+    tidyr
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.1

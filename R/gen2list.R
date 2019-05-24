@@ -104,7 +104,7 @@ check_col <- function(data, col, factor_int = FALSE) {
     }
     if (is.factor(data[[col[1]]]))
       attr(data, paste0("names", substr(col_tested, 4, 20))) <- levels(data[[col[1]]])
-    data[[col[1]]] <- as.numeric(as.factor(data[[col[1]]]))
+    data[[col[1]]] <- as.factor(data[[col[1]]])
   } else {
     if (length(col) > 1) {
       stop(col_tested, " needs to be of length 1 (is ", length(col), ").", call. = FALSE)
@@ -114,7 +114,8 @@ check_col <- function(data, col, factor_int = FALSE) {
 }
 
 
-prep_data <- function(data, col_value, col_participant, col_dv, col_within, col_between) {
+prep_data <- function(data, col_value, col_participant, col_dv, 
+                      col_within, col_between, return_list = TRUE) {
   ## check if all columns are in data and concatenate in one, if longer than 1
   data <- check_col(data, col_value)
   data <- check_col(data, col_participant, TRUE)
@@ -134,6 +135,8 @@ prep_data <- function(data, col_value, col_participant, col_dv, col_within, col_
   
   newd <- data[,c(col_participant, col_between, col_dv, col_within, col_value)]
   d_gen <- tidyr::spread(newd, col_within, col_value)
+  if(!return_list) return(d_gen)
+  
   if (!is.null(attr(data, "names_within"))) {
     return(gen2list(d_gen, attr(data, "names_within")))
   } else return(gen2list(d_gen))

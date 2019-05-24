@@ -20,13 +20,18 @@
 #' `test_mr` tests the fit of the partial order model.
 #' 
 #' 
-#' @param  data `data.frame` containing data aggregated by participant and relevant variables
-#' @param  col_value `character`. Name of column in `data` containing values for analysis
-#' @param col_participant `character`. Name of column in `data` containing the participant identifier
+#' @param  data `data.frame` containing data aggregated by participant and
+#'   relevant variables.
+#' @param  col_value `character`. Name of column in `data` containing values for
+#'   analysis (i.e., responses).
+#' @param col_participant `character`. Name of column in `data` containing the
+#'   participant identifier.
 #' @param col_dv `character`. Name of column in `data` containing the dependent
 #'   variable(s) spanning the state-trace axes.
-#' @param col_within `character`. Name of column in `data` containing the within-subjects variables.
-#' @param col_between `character`, optional. Name of column in `data` containing the between-subjects variables.
+#' @param col_within `character`. Name of column in `data` containing the
+#'   within-subjects variables.
+#' @param col_between `character`, optional. Name of column in `data` containing
+#'   the between-subjects variables.
 #' @param partial is a partial order in either list or adjacency matrix format.
 #' @param  shrink Shrinkage parameter (see [sta_stats]). Default calculates
 #'   optimum amount of shrinkage.
