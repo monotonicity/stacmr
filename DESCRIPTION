@@ -15,6 +15,6 @@ License: GPL-2
 Imports: 
     magic,
     ggplot2,
-    tidyr
+    stats
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.1

@@ -34,9 +34,18 @@ str(delay)
 
 usethis::use_data(delay, overwrite = TRUE)
 
-prep_data(delay, 
+xx <- prep_data(delay, 
           col_value = "pc", 
           col_participant = "participant",
           col_dv = "structure", 
           col_within = "block", 
           col_between = "delay")
+str(xx)
+
+tt <- prep_data(delay, 
+          col_value = "pc", 
+          col_participant = "participant",
+          col_dv = "structure", 
+          col_within = "block", 
+          col_between = "delay", return_list = FALSE) 
+str(tt)

@@ -55,24 +55,33 @@ gen2list = function (data=NULL, varnames) {
   # revised 9 March 2017 to remove missing within variables in a group
   # revised 22 August 2017 to add variable names
   # revised 28 February 2019 to repair variable names
+  # 2019/05/25 added names for all elements via attributes, which take precedence
   # *************************************************************************
   #
-  if (!missing(varnames)) {colnames(data)[4:ncol(data)]=varnames}
+  if (!is.null(attr(data, "names_within"))) {
+    varnames <- attr(data, "names_within")
+  }
+  if (!missing(varnames)) {
+    colnames(data)[4:ncol(data)]=varnames
+  }
   group = data[,2]; ugroup = sort(unique(group)); ngroup = length(ugroup)
   var = data[,3]; uvar = sort(unique(var)); nvar = length(uvar)
   within = as.matrix(data[,4:ncol(data)])
   
   y = vector("list",ngroup)
+  names(y) <- attr(data, "names_between")
   for (igroup in 1:ngroup) {
     temp = vector("list", nvar)
+    names(temp) <-  attr(data, "names_dv")
     for (ivar in 1:nvar){
       k = which(group==ugroup[igroup] & var==uvar[ivar])
       a = as.matrix(within[k,])
       # delete any variables that all all missing
       n = colSums(is.na(a)); k=which(n==nrow(a)); if (length(k) > 0) {a = a[,-k]}
       # store in 2D list
-      y[[igroup]][[ivar]]=a
+      temp[[ivar]]=a
     }
+    y[[igroup]] <- temp
   }
   return (y)
 }
@@ -133,11 +142,17 @@ prep_data <- function(data, col_value, col_participant, col_dv,
     col_between <- col_between[1]
   }
   
+  ## reduce data to relevant columns
   newd <- data[,c(col_participant, col_between, col_dv, col_within, col_value)]
-  d_gen <- tidyr::spread(newd, col_within, col_value)
+  ## bring in appropriate format
+  d_gen <- stats::reshape(newd, v.names = col_value, 
+                          timevar = col_within,
+                          idvar = c(col_participant, col_between, col_dv), 
+                          direction = "wide")
+  attr_set <- attributes(data)[-(1:2)]
+  for (i in seq_along(attr_set)) {
+    attr(d_gen, names(attr_set)[i]) <- attr(data, names(attr_set)[i])
+  }
   if(!return_list) return(d_gen)
-  
-  if (!is.null(attr(data, "names_within"))) {
-    return(gen2list(d_gen, attr(data, "names_within")))
-  } else return(gen2list(d_gen))
+  return(gen2list(d_gen))
 }

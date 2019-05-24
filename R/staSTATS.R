@@ -32,8 +32,10 @@ sta_stats <- function(data,
                  col_participant = col_participant, 
                  col_dv = col_dv, 
                  col_within = col_within, 
-                 col_between = col_between)
-    staSTATS(y, shrink=shrink, warning=warning)
+                 col_between = col_between, return_list = FALSE)
+    staSTATS(y, shrink=shrink, 
+             varnames = attr(y, "names_within"), 
+             warning=warning)
 }
 
 
@@ -59,6 +61,7 @@ staSTATS <- function(data, shrink=-1, varnames, warning=FALSE) {
   #if (missing(shrink)) {shrink = -1}
   #if (missing(warning)) {warning = 0}
   
+  y <- data
   if (is(y, "data.frame")) {
     y = gen2list(y, varnames)
   } # convert from general to list format if req'd
@@ -66,7 +69,8 @@ staSTATS <- function(data, shrink=-1, varnames, warning=FALSE) {
   
   output = vector("list", nvar)
   
-  if ('means' %in% names(y[[1]])) {output = y # already in stats form
+  if ('means' %in% names(y[[1]])) {
+    output = y # already in stats form
   } else {
     for(ivar in 1:nvar) {
       i.means = numeric()
@@ -111,16 +115,22 @@ staSTATS <- function(data, shrink=-1, varnames, warning=FALSE) {
         i.lm = magic::adiag(i.lm, g.lm)
         i.bad = c(i.bad, g.bad)
         i.nanflag = c(i.nanflag, g.nanflag)
+        # names <- rep(attr(data, "names_between"))
       }
       # add to list
-      out = list(i.means, i.n, i.cov, i.regcov, i.shrinkage, i.weights, i.lm, i.nanflag, i.bad)
+      out = list(i.means, i.n, i.cov, i.regcov, i.shrinkage, 
+                 i.weights, i.lm, i.nanflag, i.bad)
       output[[ivar]] = out
-      names(output[[ivar]]) = c("means", "n", "cov", "regcov", "shrinkage", "weights", "lm", "nanflag", "bad")
+      names(output[[ivar]]) = c("means", "n", "cov", "regcov", "shrinkage", 
+                                "weights", "lm", "nanflag", "bad")
       
       if (sum(i.nanflag > 0) && (warning))
         {warning(sum(i.nanflag), ' detected for variable',ivar)}
       if (sum(i.bad > 0) && (warning))
         {warning('Bad covariance matrix detected for variable',ivar, '. Type = ', i.bad)}
+    }
+    if(!is.null(attr(data, "names_dv"))) {
+      names(output) <- make.names(attr(data, "names_dv"), unique = TRUE)
     }
   }
   return(output)
