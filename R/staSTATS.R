@@ -32,7 +32,8 @@ sta_stats <- function(data,
                  col_participant = col_participant, 
                  col_dv = col_dv, 
                  col_within = col_within, 
-                 col_between = col_between, return_list = FALSE)
+                 col_between = col_between, 
+                 return_list = FALSE)
     staSTATS(y, shrink=shrink, 
              varnames = attr(y, "names_within"), 
              warning=warning)
@@ -82,7 +83,6 @@ staSTATS <- function(data, shrink=-1, varnames, warning=FALSE) {
       i.lm = matrix(0,0,0)
       i.bad = matrix(0,0,0)
       i.nanflag = matrix(0,0,0)
-      
       for (igroup in 1:ngroup) {
         y.i <- as.matrix(y[[igroup]][[ivar]])
  #       y.i <- y.i[complete.cases(y.i), ] ## delete rows with NAs
@@ -115,14 +115,20 @@ staSTATS <- function(data, shrink=-1, varnames, warning=FALSE) {
         i.lm = magic::adiag(i.lm, g.lm)
         i.bad = c(i.bad, g.bad)
         i.nanflag = c(i.nanflag, g.nanflag)
-        # names <- rep(attr(data, "names_between"))
       }
+      ## preassign length of names vector (should be done for others as well)
+      i.lengths <- vapply(y, function(x) ncol(x[[ivar]]), 0)
+      i.names <- rep(
+        if (!is.null(attr(data, "names_between"))) attr(data, "names_between") 
+            else "1",
+            i.lengths)
+      names(i.names) <- names(i.means)
       # add to list
       out = list(i.means, i.n, i.cov, i.regcov, i.shrinkage, 
-                 i.weights, i.lm, i.nanflag, i.bad)
+                 i.weights, i.lm, i.nanflag, i.bad, i.names)
       output[[ivar]] = out
       names(output[[ivar]]) = c("means", "n", "cov", "regcov", "shrinkage", 
-                                "weights", "lm", "nanflag", "bad")
+                                "weights", "lm", "nanflag", "bad", "conditions")
       
       if (sum(i.nanflag > 0) && (warning))
         {warning(sum(i.nanflag), ' detected for variable',ivar)}

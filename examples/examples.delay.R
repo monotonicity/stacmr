@@ -17,6 +17,11 @@ sta_stats(data=delay, col_value = "pc",
           col_within = "block", 
           col_between = "delay")
 
+sta_stats(data=delay, col_value = "pc", 
+          col_participant = "participant",
+          col_dv = "structure", 
+          col_within = "block")
+
 ### Fit CMR State-Trace Analysis Model
 fit1 <- fit_cmr(data=delay, col_value = "pc", 
                 col_participant = "participant",
