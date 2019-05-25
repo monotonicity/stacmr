@@ -11,16 +11,14 @@ str(delay, width = 78, strict.width = "cut")
 #  $ block      : Factor w/ 4 levels "B1","B2","B3",..: 1 1 1 1 1 1 1 1 1 1 ...
 #  $ pc         : num  0.338 0.287 0.525 0.35 0.237 ...
 
-sta_stats(data=delay, col_value = "pc", 
+stats <- sta_stats(data=delay, col_value = "pc", 
           col_participant = "participant",
           col_dv = "structure", 
           col_within = "block", 
           col_between = "delay")
+stats
+str(stats)
 
-sta_stats(data=delay, col_value = "pc", 
-          col_participant = "participant",
-          col_dv = "structure", 
-          col_within = "block")
 
 ### Fit CMR State-Trace Analysis Model
 fit1 <- fit_cmr(data=delay, col_value = "pc", 

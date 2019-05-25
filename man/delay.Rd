@@ -60,6 +60,15 @@ str(delay, width = 78, strict.width = "cut")
 #  $ block      : Factor w/ 4 levels "B1","B2","B3",..: 1 1 1 1 1 1 1 1 1 1 ...
 #  $ pc         : num  0.338 0.287 0.525 0.35 0.237 ...
 
+stats <- sta_stats(data=delay, col_value = "pc", 
+          col_participant = "participant",
+          col_dv = "structure", 
+          col_within = "block", 
+          col_between = "delay")
+stats
+str(stats)
+
+
 ### Fit CMR State-Trace Analysis Model
 fit1 <- fit_cmr(data=delay, col_value = "pc", 
                 col_participant = "participant",
@@ -96,7 +105,12 @@ fit2$fval
 fit2$shrinkage
 
 ### Test fit of Partial Order Model
-test2 <- fit_mr(delay, partial=E, nsample=10000)
+test2 <- test_mr(data=delay, col_value = "pc", 
+                 col_participant = "participant",
+                 col_dv = "structure", 
+                 col_within = "block", 
+                 col_between = "delay", 
+                 partial=E, nsample=10000)
 test2$p
 test2$datafit
 

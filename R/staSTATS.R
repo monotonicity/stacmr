@@ -1,8 +1,10 @@
 #' Statistics for state-Trace Analysis
 #' 
-#' Calculates statistics for state trace analysis.
+#' Calculates statistics for state trace analysis. This function is mainly for
+#' internal use, but the `print` and `summary` method for the returned objects
+#' of class `sta_stats` also provide a convenient overview of the data point of
+#' the state-trace analysis.
 #' 
-#' @param varnames An optional `list` of names of within-participant conditions
 #' @param shrink numeric indicating amount of shrinkage to apply to the
 #'   estimated covariance matrix. Generally, the covariance matrix needs to be
 #'   shrunk during the bootstrap cycle to avoid ill-conditioning. If `shrink =
@@ -14,8 +16,30 @@
 #' @param if warning is `TRUE` then a warning is thrown if `NA`s are detected.
 #'   Default is `FALSE`.
 #'   
-#' @return A list with the following slots:
-#' - 
+#' @return A `list` of `list`s with additional class `sta_stats`. The length of
+#'   the outer `lists` corresponds to the number of `dv`s in the data (i.e.,
+#'   each slot corresponds to one `dv` and is named accordingly). Each of the
+#'   inner lists contains the following slots:
+#'   -  `means`: vector of means across all conditions. Names of the vector
+#'   correspond to the within-participants conditions.
+#'   - `n`:  matrix  of number of observations (subjects) in each
+#'   within-participant block
+#'   - `cov`: the covariance matrix  (for information only)
+#'   - `regcov`: adjusted covariance matrix following application of shrinkage
+#'   - `shrinkage`: a vector of length `b` (where `b` is the number of levels of
+#'   the between-participant independent variable) containing the specified or
+#'   estimated shrinkage values.
+#'   - `weights`: matrix of weights defined as: `n * solve(regcov)`.
+#'   - `lm`: matrix  of Loftus-Masson within-participant standard errors
+#'   (potentially used by the plotting function)
+#'   - `nanflag`: count of missing values (`NA`s) per group?between-subjects
+#'   condition.
+#'   - `bad`: If not 0, indicates problems with the covariance matrix.
+#'   - `conditions`: mapping of means to between-subjects conditions
+#'   (`character` vector).
+#'   
+#'  The `summary` method returns a `data.frame` giving means, conditions, and
+#'  mean N. The `print` method prints this `data.frame` with specified `digits`.
 #' 
 #' @references Ledoit, O. & Wolf, M. (2004). Honey, I shrunk the sample
 #'   covariance matrix. *The Journal of Portfolio Management*, 30(4), 110-119.
@@ -139,6 +163,32 @@ staSTATS <- function(data, shrink=-1, varnames, warning=FALSE) {
       names(output) <- make.names(attr(data, "names_dv"), unique = TRUE)
     }
   }
+  attr(output, "varnames") <- attr(y, "varnames")
+  class(output) <- "sta_stats"
   return(output)
 }
 
+summary.sta_stats <- function(object, ...) {
+  
+  ns <- lapply(object, function(y) apply(y$n, 2, function(x) mean(x[x!=0])))
+  ns <- as.data.frame(do.call("cbind", ns))
+  colnames(ns) <- paste0("N_", colnames(ns))
+  out <- as.data.frame(do.call("cbind", lapply(object, `[[`, i = "means")))
+  out$within <- names(object[[1]][["conditions"]])
+  out$between <- object[[1]][["conditions"]]
+  out <- cbind(out, ns)
+  rownames(out) <- NULL
+  out
+  
+}
+
+print.sta_stats <- function(x, digits = 3, ...) {
+  
+  # se <- as.data.frame(do.call("cbind", lapply(x, function(x) diag(x[["lm"]]))))
+  # 
+  # mypaste <- function(x, y) paste0(format(x, digits = digits), " (", 
+  #        format(x-y, digits = digits), ", ", format(x+y, digits = digits), ")")
+  # out <- as.data.frame(mapply(mypaste, means, se), stringsAsFactors = FALSE)
+
+  print(summary(x), digits = digits)
+}

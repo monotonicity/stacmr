@@ -83,6 +83,7 @@ gen2list = function (data=NULL, varnames) {
     }
     y[[igroup]] <- temp
   }
+  attr(y, "varnames") <- attr(data, "varnames")
   return (y)
 }
 
@@ -125,6 +126,14 @@ check_col <- function(data, col, factor_int = FALSE) {
 
 prep_data <- function(data, col_value, col_participant, col_dv, 
                       col_within, col_between, return_list = TRUE) {
+  ## save all variable names for later use
+  varnames <- c(
+    value = paste(col_value, sep = ":"),
+    participant = paste(col_participant, sep = ":"),
+    dv = paste(col_dv, sep = ":"),
+    within = paste(col_within, sep = ":")
+  )
+  
   ## check if all columns are in data and concatenate in one, if longer than 1
   data <- check_col(data, col_value)
   data <- check_col(data, col_participant, TRUE)
@@ -137,7 +146,9 @@ prep_data <- function(data, col_value, col_participant, col_dv,
   if (missing(col_between)) {
     col_between <- "___NEWCOLSTACMR__"
     data[[col_between]] <- 1L
+    varnames <- c(varnames, between = "1")
   } else {
+    varnames <- c(varnames, between = paste(col_between, sep = ":"))
     data <- check_col(data, col_between, TRUE)
     col_between <- col_between[1]
   }
@@ -153,6 +164,7 @@ prep_data <- function(data, col_value, col_participant, col_dv,
   for (i in seq_along(attr_set)) {
     attr(d_gen, names(attr_set)[i]) <- attr(data, names(attr_set)[i])
   }
+  attr(d_gen, "varnames") <- varnames
   if(!return_list) return(d_gen)
   return(gen2list(d_gen))
 }

@@ -22,18 +22,23 @@ test_mr(data, col_value, col_participant, col_dv, col_within, col_between,
   partial = list(), nsample = 1, shrink = -1, tolerance = 1e-04)
 }
 \arguments{
-\item{data}{\code{data.frame} containing data aggregated by participant and relevant variables}
+\item{data}{\code{data.frame} containing data aggregated by participant and
+relevant variables.}
 
-\item{col_value}{\code{character}. Name of column in \code{data} containing values for analysis}
+\item{col_value}{\code{character}. Name of column in \code{data} containing values for
+analysis (i.e., responses).}
 
-\item{col_participant}{\code{character}. Name of column in \code{data} containing the participant identifier}
+\item{col_participant}{\code{character}. Name of column in \code{data} containing the
+participant identifier.}
 
 \item{col_dv}{\code{character}. Name of column in \code{data} containing the dependent
 variable(s) spanning the state-trace axes.}
 
-\item{col_within}{\code{character}. Name of column in \code{data} containing the within-subjects variables.}
+\item{col_within}{\code{character}. Name of column in \code{data} containing the
+within-subjects variables.}
 
-\item{col_between}{\code{character}, optional. Name of column in \code{data} containing the between-subjects variables.}
+\item{col_between}{\code{character}, optional. Name of column in \code{data} containing
+the between-subjects variables.}
 
 \item{partial}{is a partial order in either list or adjacency matrix format.}
 
@@ -78,6 +83,15 @@ str(delay, width = 78, strict.width = "cut")
 #  $ block      : Factor w/ 4 levels "B1","B2","B3",..: 1 1 1 1 1 1 1 1 1 1 ...
 #  $ pc         : num  0.338 0.287 0.525 0.35 0.237 ...
 
+stats <- sta_stats(data=delay, col_value = "pc", 
+          col_participant = "participant",
+          col_dv = "structure", 
+          col_within = "block", 
+          col_between = "delay")
+stats
+str(stats)
+
+
 ### Fit CMR State-Trace Analysis Model
 fit1 <- fit_cmr(data=delay, col_value = "pc", 
                 col_participant = "participant",
@@ -114,7 +128,12 @@ fit2$fval
 fit2$shrinkage
 
 ### Test fit of Partial Order Model
-test2 <- fit_mr(delay, partial=E, nsample=10000)
+test2 <- test_mr(data=delay, col_value = "pc", 
+                 col_participant = "participant",
+                 col_dv = "structure", 
+                 col_within = "block", 
+                 col_between = "delay", 
+                 partial=E, nsample=10000)
 test2$p
 test2$datafit
 

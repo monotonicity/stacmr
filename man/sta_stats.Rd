@@ -5,22 +5,26 @@
 \title{Statistics for state-Trace Analysis}
 \usage{
 sta_stats(data, col_value, col_participant, col_dv, col_within,
-  col_between, shrink = -1, varnames, warning = FALSE)
+  col_between, shrink = -1, warning = FALSE)
 }
 \arguments{
-\item{data}{A \code{list} of \code{lists} (returned from \link{gen2list}) containing
-\code{nsub} x \code{ncond} matrices}
+\item{data}{\code{data.frame} containing data aggregated by participant and
+relevant variables.}
 
-\item{col_value}{\code{character}. Name of column in \code{data} containing values for analysis}
+\item{col_value}{\code{character}. Name of column in \code{data} containing values for
+analysis (i.e., responses).}
 
-\item{col_participant}{\code{character}. Name of column in \code{data} containing the participant identifier}
+\item{col_participant}{\code{character}. Name of column in \code{data} containing the
+participant identifier.}
 
 \item{col_dv}{\code{character}. Name of column in \code{data} containing the dependent
 variable(s) spanning the state-trace axes.}
 
-\item{col_within}{\code{character}. Name of column in \code{data} containing the within-subjects variables.}
+\item{col_within}{\code{character}. Name of column in \code{data} containing the
+within-subjects variables.}
 
-\item{col_between}{\code{character}, optional. Name of column in \code{data} containing the between-subjects variables.}
+\item{col_between}{\code{character}, optional. Name of column in \code{data} containing
+the between-subjects variables.}
 
 \item{shrink}{numeric indicating amount of shrinkage to apply to the
 estimated covariance matrix. Generally, the covariance matrix needs to be
@@ -30,13 +34,42 @@ off-diagonal entries set to zero. If \code{shrink < 0} (the default) then an
 optimal shrinkage value is estimated for each within-participant block and
 applied according to an algorithm developed by Ledoit and Wolf (2004).}
 
-\item{varnames}{An optional \code{list} of names of within-participant conditions}
-
 \item{if}{warning is \code{TRUE} then a warning is thrown if \code{NA}s are detected.
 Default is \code{FALSE}.}
 }
+\value{
+A \code{list} of \code{list}s with additional class \code{sta_stats}. The length of
+the outer \code{lists} corresponds to the number of \code{dv}s in the data (i.e.,
+each slot corresponds to one \code{dv} and is named accordingly). Each of the
+inner lists contains the following slots:
+\itemize{
+\item \code{means}: vector of means across all conditions. Names of the vector
+correspond to the within-participants conditions.
+\item \code{n}:  matrix  of number of observations (subjects) in each
+within-participant block
+\item \code{cov}: the covariance matrix  (for information only)
+\item \code{regcov}: adjusted covariance matrix following application of shrinkage
+\item \code{shrinkage}: a vector of length \code{b} (where \code{b} is the number of levels of
+the between-participant independent variable) containing the specified or
+estimated shrinkage values.
+\item \code{weights}: matrix of weights defined as: \code{n * solve(regcov)}.
+\item \code{lm}: matrix  of Loftus-Masson within-participant standard errors
+(potentially used by the plotting function)
+\item \code{nanflag}: count of missing values (\code{NA}s) per group?between-subjects
+condition.
+\item \code{bad}: If not 0, indicates problems with the covariance matrix.
+\item \code{conditions}: mapping of means to between-subjects conditions
+(\code{character} vector).
+}
+
+The \code{summary} method returns a \code{data.frame} giving means, conditions, and
+mean N. The \code{print} method prints this \code{data.frame} with specified \code{digits}.
+}
 \description{
-Calculates statistics for state trace analysis.
+Calculates statistics for state trace analysis. This function is mainly for
+internal use, but the \code{print} and \code{summary} method for the returned objects
+of class \code{sta_stats} also provide a convenient overview of the data point of
+the state-trace analysis.
 }
 \references{
 Ledoit, O. & Wolf, M. (2004). Honey, I shrunk the sample
