@@ -8,8 +8,8 @@ Authors@R: c(
           email="singmann@gmail.com", comment=c(ORCID="0000-0002-4842-3657")),
           person(given="Michael L.", family="Kalish", role=c("ctb"))
             )
-Description: Set of R functions that implement the Conjoint Monotonic Regression (CMR) approach to State-Trace Analysis (STA)
-Depends: R (>= 2.7.0), rJava (>= 0.5-0)
+Description: State-trace analysis (STA; Bamber, 1979, <doi:10.1016/0022-2496(79)90016-6>) is a general method to determine properties of the latent structure that mediates the effects of one or more independent variables on two or more dependent variables. stacmr implements the Conjoint Monotonic Regression approach to State-Trace Analysis described in Dunn and Kalish (2018, <doi:10.1007/978-3-319-73129-2>).
+Depends: R (>= 2.10.0), rJava (>= 0.5-0)
 SystemRequirements: Java (>= 1.5)
 License: GPL-2
 Imports: 

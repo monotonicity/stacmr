@@ -18,8 +18,6 @@
 #' @param  palette identifies a color palette (see
 #'   \code{\link[ggplot2]{scale_colour_brewer}}) for plotting points.
 #'   
-#' @noMd
-#' @export
 staPLOT <- function (data, vars=c(1,2), groups=NULL, grouplabels=NULL, 
                      axislabels=c("DV1","DV2"),
                      xlim=NULL, ylim=NULL, pred=NULL, palette="Set1") 

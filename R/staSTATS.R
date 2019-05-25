@@ -13,7 +13,7 @@
 #'   off-diagonal entries set to zero. If `shrink < 0` (the default) then an
 #'   optimal shrinkage value is estimated for each within-participant block and
 #'   applied according to an algorithm developed by Ledoit and Wolf (2004).
-#' @param if warning is `TRUE` then a warning is thrown if `NA`s are detected.
+#' @param warning if warning is `TRUE` then a warning is thrown if `NA`s are detected.
 #'   Default is `FALSE`.
 #'   
 #' @return A `list` of `list`s with additional class `sta_stats`. The length of

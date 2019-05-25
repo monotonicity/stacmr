@@ -34,7 +34,7 @@ off-diagonal entries set to zero. If \code{shrink < 0} (the default) then an
 optimal shrinkage value is estimated for each within-participant block and
 applied according to an algorithm developed by Ledoit and Wolf (2004).}
 
-\item{if}{warning is \code{TRUE} then a warning is thrown if \code{NA}s are detected.
+\item{warning}{if warning is \code{TRUE} then a warning is thrown if \code{NA}s are detected.
 Default is \code{FALSE}.}
 }
 \value{
