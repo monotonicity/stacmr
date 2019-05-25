@@ -144,7 +144,7 @@ staSTATS <- function(data, shrink=-1, varnames, warning=FALSE) {
       i.lengths <- vapply(y, function(x) ncol(x[[ivar]]), 0)
       i.names <- rep(
         if (!is.null(attr(data, "names_between"))) attr(data, "names_between") 
-            else "1",
+            else rep("1", ngroup),
             i.lengths)
       names(i.names) <- names(i.means)
       # add to list
@@ -168,6 +168,7 @@ staSTATS <- function(data, shrink=-1, varnames, warning=FALSE) {
   return(output)
 }
 
+#' @export
 summary.sta_stats <- function(object, ...) {
   
   ns <- lapply(object, function(y) apply(y$n, 2, function(x) mean(x[x!=0])))
@@ -182,6 +183,7 @@ summary.sta_stats <- function(object, ...) {
   
 }
 
+#' @export
 print.sta_stats <- function(x, digits = 3, ...) {
   
   # se <- as.data.frame(do.call("cbind", lapply(x, function(x) diag(x[["lm"]]))))

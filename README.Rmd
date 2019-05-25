@@ -1,0 +1,76 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+# stacmr
+
+<!-- badges: start -->
+  [![Travis build status](https://travis-ci.org/monotonicity/stacmr.svg?branch=master)](https://travis-ci.org/monotonicity/stacmr)
+<!-- badges: end -->
+
+The goal of stacmr is to ...
+
+## Installation
+
+You can install the released version of stacmr from [CRAN](https://CRAN.R-project.org) with:
+
+``` r
+## NOT YET AVAILABLE FROM CRAN
+```
+
+And the development version from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("monotonicity/stacmr")
+```
+## Example
+
+This is a basic example.
+
+```{r example}
+library(stacmr)
+## load data from Exp. 1 of Dunn, Newell, & Kalish (2012)
+data(delay)
+str(delay, width = 78, strict.width = "cut")
+
+stats <- sta_stats(data=delay, col_value = "pc", 
+          col_participant = "participant",
+          col_dv = "structure", 
+          col_within = "block", 
+          col_between = "delay")
+stats
+str(stats)
+
+
+### Fit CMR State-Trace Analysis Model
+fit1 <- fit_cmr(data=delay, col_value = "pc", 
+                col_participant = "participant",
+                col_dv = "structure", 
+                col_within = "block", 
+                col_between = "delay")
+cbind(fit1$x[[1]], fit1$x[[2]])
+fit1$fval
+fit1$shrinkage
+
+
+### Test CMR State-Trace Analysis
+test1 <- test_cmr(data=delay, col_value = "pc", 
+                  col_participant = "participant",
+                  col_dv = "structure", 
+                  col_within = "block", 
+                  col_between = "delay")
+test1
+```
+
+

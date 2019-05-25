@@ -13,6 +13,8 @@ use_package("tidyr")
 
 use_roxygen_md()
 use_pkgdown()
+use_travis()
+use_readme_rmd()
 
 ### prepare data
 
