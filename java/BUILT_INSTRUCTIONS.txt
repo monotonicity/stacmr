@@ -10,6 +10,7 @@ Note that this also requires a Java development environment, e.g.:
 sudo apt-get install default-jdk
 
 If successful, this will produce the .jar file in inst/java  
+In case of multiple .jar files, use the one with dependencies.
 
 The original source for this code is:
 https://github.com/michaelkalish/STA
