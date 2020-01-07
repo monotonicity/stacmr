@@ -1,8 +1,8 @@
 
-library("devtools")
-load_all()
+pkgload::load_all(compile = TRUE)
+.jinit(classpath="inst/java/fxMR-0.3.41-jar-with-dependencies.jar")
 
-document()
+devtools::document()
 
 
 ### packages

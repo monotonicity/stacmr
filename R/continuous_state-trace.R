@@ -41,6 +41,7 @@
 #'   (function values smaller than `tolerance` are set to 0)
 #'   
 #' @example examples/examples.delay.R
+#' @import rJava
 #' 
 #' @export
 fit_cmr <- function (data, 

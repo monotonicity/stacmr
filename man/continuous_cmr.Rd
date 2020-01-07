@@ -8,18 +8,57 @@
 \alias{test_mr}
 \title{CMR State-Trace Analysis}
 \usage{
-fit_cmr(data, col_value, col_participant, col_dv, col_within, col_between,
-  partial = list(), shrink = -1, approx = FALSE, tolerance = 1e-04)
+fit_cmr(
+  data,
+  col_value,
+  col_participant,
+  col_dv,
+  col_within,
+  col_between,
+  partial = list(),
+  shrink = -1,
+  approx = FALSE,
+  tolerance = 1e-04
+)
 
-test_cmr(data, col_value, col_participant, col_dv, col_within, col_between,
-  partial = list(), nsample = 1, shrink = -1, approx = FALSE,
-  tolerance = 1e-04)
+test_cmr(
+  data,
+  col_value,
+  col_participant,
+  col_dv,
+  col_within,
+  col_between,
+  partial = list(),
+  nsample = 1,
+  shrink = -1,
+  approx = FALSE,
+  tolerance = 1e-04
+)
 
-fit_mr(data, col_value, col_participant, col_dv, col_within, col_between,
-  partial = list(), shrink = -1, tolerance = 1e-04)
+fit_mr(
+  data,
+  col_value,
+  col_participant,
+  col_dv,
+  col_within,
+  col_between,
+  partial = list(),
+  shrink = -1,
+  tolerance = 1e-04
+)
 
-test_mr(data, col_value, col_participant, col_dv, col_within, col_between,
-  partial = list(), nsample = 1, shrink = -1, tolerance = 1e-04)
+test_mr(
+  data,
+  col_value,
+  col_participant,
+  col_dv,
+  col_within,
+  col_between,
+  partial = list(),
+  nsample = 1,
+  shrink = -1,
+  tolerance = 1e-04
+)
 }
 \arguments{
 \item{data}{\code{data.frame} containing data aggregated by participant and
@@ -93,7 +132,8 @@ str(stats)
 
 
 ### Fit CMR State-Trace Analysis Model
-fit1 <- fit_cmr(data=delay, col_value = "pc", 
+fit1 <- fit_cmr(data=delay, 
+                col_value = "pc", 
                 col_participant = "participant",
                 col_dv = "structure", 
                 col_within = "block", 
