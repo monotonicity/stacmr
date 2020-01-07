@@ -33,14 +33,14 @@ stimuli were presented in a random order (with different orders for each
 participant). Participants were told to learn which of four categories (labeled,
 1, 2, 3, and 4) each stimulus belonged to. On each trial, a stimulus was
 presented, and participants terminated the display by pressing one of the
-keys labeled 1–4 on the computer keyboard corresponding to Categories 1–4,
+keys labeled 1-4 on the computer keyboard corresponding to Categories 1-4,
 respectively. Following the response, a mask appeared. The length with which
 the mask was shown defined the \code{delay} condition. Either 0.5-s (No Delay
 condition) or 5-s (Delay condition).
 
 Following presentation of the mask, feedback appeared on the computer screen
-for 0.75 s. If the response was correct, the word “Correct” was presented;
-otherwise, the word “Incorrect” was presented.  Following presentation of
+for 0.75 s. If the response was correct, the word "Correct" was presented;
+otherwise, the word "Incorrect" was presented.  Following presentation of
 feedback, a blank screen followed the duration of which was again defined the
 \code{delay} condition. The screen was blank for either 5 s (No Delay condition)
 or 0.5 s (Delay condition) before the next trial commenced. The sequence and
@@ -70,7 +70,8 @@ str(stats)
 
 
 ### Fit CMR State-Trace Analysis Model
-fit1 <- fit_cmr(data=delay, col_value = "pc", 
+fit1 <- fit_cmr(data=delay, 
+                col_value = "pc", 
                 col_participant = "participant",
                 col_dv = "structure", 
                 col_within = "block", 
