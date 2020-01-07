@@ -4,9 +4,17 @@
 \alias{staPLOT}
 \title{State-Trace Plot for Continuous Data}
 \usage{
-staPLOT(data, vars = c(1, 2), groups = NULL, grouplabels = NULL,
-  axislabels = c("DV1", "DV2"), xlim = NULL, ylim = NULL,
-  pred = NULL, palette = "Set1")
+staPLOT(
+  data,
+  vars = c(1, 2),
+  groups = NULL,
+  grouplabels = NULL,
+  axislabels = c("DV1", "DV2"),
+  xlim = NULL,
+  ylim = NULL,
+  pred = NULL,
+  palette = "Set1"
+)
 }
 \arguments{
 \item{data}{Name of the data set and is the one required argument. It may be

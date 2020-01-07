@@ -4,8 +4,16 @@
 \alias{sta_stats}
 \title{Statistics for state-Trace Analysis}
 \usage{
-sta_stats(data, col_value, col_participant, col_dv, col_within,
-  col_between, shrink = -1, warning = FALSE)
+sta_stats(
+  data,
+  col_value,
+  col_participant,
+  col_dv,
+  col_within,
+  col_between,
+  shrink = -1,
+  warning = FALSE
+)
 }
 \arguments{
 \item{data}{\code{data.frame} containing data aggregated by participant and
