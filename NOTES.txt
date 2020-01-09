@@ -13,6 +13,7 @@
     - list(delay = "`no delay` = `delay`", block = "auto")
     - list(delay = "auto", block = "B1 < B2 = B3 < B4")
     - symbolic specification only allows less-than (which means less-than or equal) and equality.
+- if data is in summary statistics format (need to check how this works with the new format), parametric bootstrap is used in contrast to the non-parametric bootstrap implemented by default ()
 
 ## Example Session
 obj <- cmr(...)/mr(...)
