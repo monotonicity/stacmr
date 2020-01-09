@@ -78,7 +78,10 @@ fit_cmr <- function (data,
 test_cmr <- function (data, 
                    col_value, col_participant, col_dv, col_within, 
                    col_between, 
-                   partial = list(), nsample=1, shrink=-1, approx=FALSE,
+                   partial = list(), 
+                   nsample = 1000, 
+                   shrink = -1, 
+                   approx = FALSE,
                    tolerance = 1e-4) {
 # input:
   # nsample = no. of Monte Carlo samples (about 10000 is good)
