@@ -1,0 +1,32 @@
+
+- between and within argument should accept several column names which are combined as a lexicographic order.
+- both col_between and col_within should be optional (i.e., if none, only one level of factor)
+- cmr() function should do both fitting and testing with argument test = TRUE as default (if false, only fitting, but no testing).
+- It would be great to get from the bootstrap not only function value, but fitted values to get estimate of precision of fitted values (i.e., predicted cell means)
+- mr() function should work with one level of DV, and return 0 (with warning) if no partial order is specified. Warning: "No partial order specified. SSE necessarily 0."
+- column names for binomial: col_condition (combines between and within as there is only between implemented), col_success and col_failure for both frequencies (need to be integers).
+- in binomial case, emit warning if within-column is detected.
+- for partial order, could be specified on factor levels and then implied order be computed.
+- partial order should accept either:
+    - "auto": completely implied by order of factor levels
+    - list(delay = "auto")
+    - list(delay = "`no delay` = `delay`", block = "auto")
+    - list(delay = "auto", block = "B1 < B2 = B3 < B4")
+    - symbolic specification only allows less-than (which means less-than or equal) and equality.
+
+## Example Session
+obj <- cmr(...)/mr(...)
+obj
+# p-value
+# names of DVs
+# number of data points
+
+summary(obj)
+# same information as print plus estimated cell means
+# fit value
+# Sum-of-squared errors (SSE)
+
+state_trace(obj) ## produces state trace plot
+
+plot_null(obj)  ## produces histogram of empirical (boot-strapped) null distribution
+

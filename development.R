@@ -1,5 +1,5 @@
 
-pkgload::load_all(compile = TRUE)
+pkgload::load_all()
 .jinit(classpath="inst/java/fxMR-0.3.41-jar-with-dependencies.jar")
 
 devtools::document()
