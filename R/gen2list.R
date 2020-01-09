@@ -130,8 +130,7 @@ prep_data <- function(data, col_value, col_participant, col_dv,
   varnames <- c(
     value = paste(col_value, sep = ":"),
     participant = paste(col_participant, sep = ":"),
-    dv = paste(col_dv, sep = ":"),
-    within = paste(col_within, sep = ":")
+    dv = paste(col_dv, sep = ":")
   )
   
   ## check if all columns are in data and concatenate in one, if longer than 1
@@ -140,8 +139,16 @@ prep_data <- function(data, col_value, col_participant, col_dv,
   col_participant <- col_participant[1]
   data <- check_col(data, col_dv, TRUE)
   col_dv <- col_dv[1]
-  data <- check_col(data, col_within, TRUE)
-  col_within <- col_within[1]
+  
+  if (missing(col_within)) {
+    col_within <- "___NEWWNCOLSTACMR__"
+    data[[col_within]] <- 1L
+    varnames <- c(varnames, within = "1")
+  } else {
+    varnames <- c(varnames, within = paste(col_within, sep = ":"))
+    data <- check_col(data, col_within, TRUE)
+    col_within <- col_within[1]
+  }
   
   if (missing(col_between)) {
     col_between <- "___NEWCOLSTACMR__"

@@ -30,15 +30,40 @@ st_d1 <- cmr(
   col_participant = "participant",
   col_dv = "structure", 
   col_within = "block", 
-  col_between = "delay"
+  col_between = "delay", 
+  nsample = 1e4
 )
 st_d1  ## basic information about conjoint-monotonic model
 
 summary(st_d1)  ## full summary information about conjoint-monotonic model
 
-state_trace(obj) ## produces state trace plot
+state_trace(st_d1) ## produces state trace plot
 
-plot_null(obj)  ## produces histogram of empirical (boot-strapped) null distribution
+plot_null(st_d1)  ## produces histogram of empirical (boot-strapped) null distribution
+
+str(st_d1, 1, give.attr = FALSE) ## overview of information in fitted object
+
+st_d2 <- cmr(
+  data = delay, 
+  col_value = "pc", 
+  col_participant = "participant",
+  col_dv = "structure", 
+  col_within = "block", 
+  col_between = "delay", 
+  approx = TRUE, 
+  nsample = 1e4
+)
+
+st_d3 <- cmr(
+  data = delay, 
+  col_value = "pc", 
+  col_participant = "participant",
+  col_dv = "structure", 
+  col_within = "block", 
+  col_between = "delay", test = FALSE,
+  approx = TRUE, 
+  nsample = 1e4
+)
 
 ### OLD STUFF BELOW: CHANGE PLEASE
 

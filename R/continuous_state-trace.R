@@ -4,39 +4,37 @@
 #' 
 #' @description 
 #' 
-#' `fit_cmr` is the main function that conducts the CMR (state-trace) analysis
-#' for continuous data. It takes the data as a `data.frame` and an optional
-#' partial order and returns the best fitting values (to the data means) and the
-#' least squares fit. It fits the monotonic model to the data.
+#' `cmr` is the main function that conducts the CMR (state-trace) analysis for
+#' continuous data. It takes the data as a `data.frame` and an optional partial
+#' order and returns a fitted model object of class `stacmr`. It fits the
+#' conjoint monotonic model to the data and calculates the *p*-value.
 #' 
-#' `test_cmr`  estimates the empirical distribution (and hence *p*-value) of
-#' the difference in the fit of the conjoint monotonic and the fit of the
-#' partial order model.
-#' 
-#' `fit_mr` conducts monotonic regression on a data structure according to a
-#' given partial order. It fits the partial order model to the data (i.e., the
-#' set of dependent variables).
-#' 
-#' `test_mr` tests the fit of the partial order model.
-#' 
+#' `mr` conducts monotonic regression on a data structure according to a
+#' given partial order. 
 #' 
 #' @param  data `data.frame` containing data aggregated by participant and
-#'   relevant variables.
-#' @param  col_value `character`. Name of column in `data` containing values for
-#'   analysis (i.e., responses).
+#'   relevant variables in columns.
+#' @param  col_value `character`. Name of column in `data` containing numerical
+#'   values for analysis (i.e., responses).
 #' @param col_participant `character`. Name of column in `data` containing the
 #'   participant identifier.
 #' @param col_dv `character`. Name of column in `data` containing the dependent
 #'   variable(s) spanning the state-trace axes.
-#' @param col_within `character`. Name of column in `data` containing the
-#'   within-subjects variables.
-#' @param col_between `character`, optional. Name of column in `data` containing
-#'   the between-subjects variables.
-#' @param partial is a partial order in either list or adjacency matrix format.
+#' @param col_within `character`, optional. Name of column(s) in `data`
+#'   containing the within-subjects variables.
+#' @param col_between `character`, optional. Name of column(s) in `data`
+#'   containing the between-subjects variables.
+#' @param partial defines a partial order. Either a `character` or a named
+#'   `list` of characters. See details for ways to specify a partial order.
+#' @param test logical. If `TRUE` (the default) *p*-value is calculated based
+#'   double-bootsrap procedure with `nsamples`. If `FALSE`, no test statistic is
+#'   approximated and model is only fit.
+#' @param nsample number of Monte Carlo samples (default is 1000, but about
+#'   10000 is probably better). Only used if `test = TRUE`.
 #' @param  shrink Shrinkage parameter (see [sta_stats]). Default calculates
 #'   optimum amount of shrinkage.
 #' @param approx `FALSE` (the default) uses full algorithm, `TRUE` uses an
-#'   approximate algorithm.
+#'   approximate algorithm that should be used for large problems.
 #' @param tolerance tolerance used during optimization for numerical stability
 #'   (function values smaller than `tolerance` are set to 0)
 #'   
@@ -44,15 +42,19 @@
 #' @import rJava
 #' 
 #' @export
-fit_cmr <- function (data, 
-                     col_value, col_participant, col_dv, col_within, 
-                     col_between, 
-                     partial = list(), shrink=-1, approx=FALSE, 
-                     tolerance = 1e-4) {
-  # wrapper function for staCMRx
-  # Multidimensional CMR
+cmr <- function (data, 
+                 col_value, col_participant, col_dv, 
+                 col_within, col_between, 
+                 partial, 
+                 test = TRUE,
+                 nsample = 1000, 
+                 shrink = -1, 
+                 approx = FALSE, 
+                 tolerance = 1e-4) {
+  # wrapper function for staCMRx and jCMRfitsx
+  # Fit and Test Multidimensional CMR
   # data is cell array of data or structured output from staSTATS 
-  # partial is partial order
+  # partial will be transformed into partial order
   # shrink is parameter to control shrinkage of covariance matrix;
   # 0 = no shrinkage; 1 = diagonal matrix; -1 = calculate optimum
   # returns:
@@ -61,76 +63,104 @@ fit_cmr <- function (data,
   # shrinkage = estimated shrinkage of covariance matrix
   # approx = F for full algorithm; T = approximate algorithm
   
-  data <- prep_data(data = data, 
+  cl <- match.call()
+  
+  if (missing(partial)) {
+    partial = list()
+  } else {
+    warning("partial not yet implemented")
+    partial = list()
+    ## if (!is.list(partial)) {partial = adj2list(partial)}
+  }
+  
+  # data_prep <- prep_data(data = data, 
+  #                   col_value = col_value, 
+  #                   col_participant = col_participant, 
+  #                   col_dv = col_dv, 
+  #                   col_within = col_within, 
+  #                   col_between = col_between, 
+  #                   return_list = FALSE)
+  data_list <- prep_data(data = data, 
                     col_value = col_value, 
                     col_participant = col_participant, 
                     col_dv = col_dv, 
                     col_within = col_within, 
                     col_between = col_between)
-  output = staCMRx (data, model=NULL, E=partial, shrink=shrink, 
-                    tolerance=tolerance, proc=-1, approx=approx)
   
-  return (output)
-}
-
-#' @rdname continuous_cmr 
-#' @export
-test_cmr <- function (data, 
-                   col_value, col_participant, col_dv, col_within, 
-                   col_between, 
-                   partial = list(), 
-                   nsample = 1000, 
-                   shrink = -1, 
-                   approx = FALSE,
-                   tolerance = 1e-4) {
-# input:
-  # nsample = no. of Monte Carlo samples (about 10000 is good)
-  # data = data structure (cell array or general)
-  # model is a nvar * k matrix specifying the linear model, default = ones(nvar,1))
-  # partial = optional partial order model e.g. E={[1 2] [3 4 5]} indicates that
-  # condition 1 <= condition 2 and condition 3 <= condition 4 <= condition 5
-  # default = none (empty)
-  # shrink is parameter to control shrinkage of covariance matrix (if input is not stats form);
-  # 0 = no shrinkage; 1 = diagonal matrix; -1 = calculate optimum, default = -1
-  # approx = approximation algorithm; F = no; T = yes
-# output:
-  # p = empirical p-value
-  # datafit = observed fit of monotonic (1D) model
-  # fits = nsample vector of fits of Monte Carlo samples (it is against this
-  # distribution that datafit is compared to calculate p)
-  # *************************************************************************
-  # converted from matlab 18 September 2016
-  # approximation option added 17 September 2018
-  # *************************************************************************
   
-  ## bring data in list format
-  y <- prep_data(data = data, 
-                 col_value = col_value, 
-                 col_participant = col_participant, 
-                 col_dv = col_dv, 
-                 col_within = col_within, 
-                 col_between = col_between)
+  fit_out <- staCMRx(
+    data_list,
+    model = NULL,
+    E = partial,
+    shrink = shrink,
+    tolerance = tolerance,
+    proc = -1,
+    approx = approx
+  )
   
-  # if (is(data,"data.frame")) {
-  #   y = gen2list (data) # convert from general format to list format
-  # } else {y = data} 
+  ## prepare output from fit object
+  stats <- sta_stats(data = data, 
+                     col_value = col_value, 
+                     col_participant = col_participant, 
+                     col_dv = col_dv, 
+                     col_within = col_within, 
+                     col_between = col_between)
+  estimate <- summary(stats)[,1:4]
+  estimate[[1]] <- fit_out$x[[1]]
+  estimate[[2]] <- fit_out$x[[2]]
   
-  proc = -1
-  cheapP = F
-  mrTol = 0
-  seed = -1
+  out <- list(
+    estimate = estimate,
+    fit = fit_out$fval,
+    partial = partial
+  )
+  attr(out, "value_fit") <- "SSE"  ## sum of squared errors
   
-  nvar =length(y[[1]])
-  model = NULL
-  if (missing(model) | is.null(model)) {model = matrix(1,nvar,1)} # sta default model
+  if (test) {
+    proc <-  -1
+    cheapP <- FALSE
+    mrTol <- 0
+    seed <- -1
+    model <- matrix(1,length(data_list[[1]]),1)
+    # input:
+    # nsample = no. of Monte Carlo samples (about 10000 is good)
+    # data = data structure (cell array or general)
+    # model is a nvar * k matrix specifying the linear model, default = ones(nvar,1))
+    # partial = optional partial order model e.g. E={[1 2] [3 4 5]} indicates that
+      # condition 1 <= condition 2 and condition 3 <= condition 4 <= condition 5
+      # default = none (empty)
+    # shrink is parameter to control shrinkage of covariance matrix (if input is not stats form);
+      # 0 = no shrinkage; 1 = diagonal matrix; -1 = calculate optimum, default = -1
+    # approx = approximation algorithm; F = no; T = yes
+    test_out <- jCMRfitsx(nsample = nsample,
+                          y = data_list, 
+                          model = model, E = partial, shrink = shrink,
+                          proc = proc, cheapP = cheapP, approximate = approx, 
+                          mrTol = mrTol, seed = seed) # call java program
+    test_out$fits[which(test_out$fits <= tolerance)] = 0;
+    # output:
+    # p = empirical p-value
+    # datafit = observed fit of monotonic (1D) model
+    # fits = nsample vector of fits of Monte Carlo samples (it is against this
+    # distribution that datafit is compared to calculate p)
+    
+    out$p <- test_out$p
+    out$fit_null_dist <- test_out$fits
+    attr(out, "nsample") <- nsample
+    
+  } else {
+    out$p <- NA
+    out$fit_null_dist <- NA
+    attr(out, "nsample") <- 0
+  }
   
-  if (!is.list(partial)) {partial = adj2list(partial)} # convert from adjacency matrix to list
   
-  output = jCMRfitsx(nsample, y, model, partial, shrink, proc, cheapP, approx, mrTol, seed) # call java program
+  out$shrinkage <- fit_out$shrinkage
+  out$data_list <- data_list
+  out$call <- cl
   
-  output$fits[which(output$fits <= tolerance)] = 0;
-  
-  return (output)
+  class(out) <- "stacmr"
+  return (out)
 }
 
 
