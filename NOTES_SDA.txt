@@ -1,0 +1,10 @@
+- model defines structure of problem as a model matrix.
+  - number of rows is number of DVs
+  - number of columns is number of latent variables
+  - matrix is model matrix of latent model
+- values in matrix indicate whether or not a certain latent variable affect a specific DV.
+- In STA case, model matrix is simply a matrix with ones (i.e., two rows and one column).
+- For reasoning example, 4 DVs are: valid-deductive, valid-inductive, invalid-deductive, invalid-inductive
+- Maybe good example: Lassiter & Goodman model
+  - For this two by-participant data sets exists: Lassiter & Goodman and Singmann & Klauer (2011)
+  
