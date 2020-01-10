@@ -128,9 +128,9 @@ prep_data <- function(data, col_value, col_participant, col_dv,
                       col_within, col_between, return_list = TRUE) {
   ## save all variable names for later use
   varnames <- c(
-    value = paste(col_value, sep = ":"),
-    participant = paste(col_participant, sep = ":"),
-    dv = paste(col_dv, sep = ":")
+    value = col_value,
+    participant = paste(col_participant, collapse = ":"),
+    dv = paste(col_dv, collapse = ":")
   )
   
   ## check if all columns are in data and concatenate in one, if longer than 1
@@ -142,10 +142,10 @@ prep_data <- function(data, col_value, col_participant, col_dv,
   
   if (missing(col_within)) {
     col_within <- "___NEWWNCOLSTACMR__"
-    data[[col_within]] <- 1L
-    varnames <- c(varnames, within = "1")
+    data[[col_within]] <- "y"
+    varnames <- c(varnames, within = "y")
   } else {
-    varnames <- c(varnames, within = paste(col_within, sep = ":"))
+    varnames <- c(varnames, within = paste(col_within, collapse = ":"))
     data <- check_col(data, col_within, TRUE)
     col_within <- col_within[1]
   }
@@ -155,7 +155,7 @@ prep_data <- function(data, col_value, col_participant, col_dv,
     data[[col_between]] <- 1L
     varnames <- c(varnames, between = "1")
   } else {
-    varnames <- c(varnames, between = paste(col_between, sep = ":"))
+    varnames <- c(varnames, between = paste(col_between, collapse = ":"))
     data <- check_col(data, col_between, TRUE)
     col_between <- col_between[1]
   }

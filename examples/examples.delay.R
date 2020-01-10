@@ -21,7 +21,7 @@ stats <- sta_stats(
 )
 stats
 str(stats)
-
+summary(stats)
 
 ### Fit and test CMR State-Trace Analysis Model
 st_d1 <- cmr(
@@ -65,11 +65,39 @@ st_d3 <- cmr(
   nsample = 1e4
 )
 
+### with partial order
+
+## wrong model:
+st_d4 <- cmr(
+  data = delay, 
+  col_value = "pc", 
+  col_participant = "participant",
+  col_dv = "structure", 
+  col_within = "block", 
+  col_between = "delay", 
+  nsample = 1e4, 
+  partial = "auto"
+)
+st_d4
+
+mr_d4 <- mr(
+  data = delay, 
+  col_value = "pc", 
+  col_participant = "participant",
+  col_dv = "structure", 
+  col_within = "block", 
+  col_between = "delay", 
+  nsample = 1e4, 
+  partial = "auto"
+)
+mr_d4
+
 ### OLD STUFF BELOW: CHANGE PLEASE
 
 #### Fit and specify partial order that should be obeyed by data
 # Create Partial Order
 E <- list(c(1:4),c(5:8),c(5,1),c(6,2),c(7,3),c(8,4))
+list2adj(1:8, E)
 
 ### Fits Partial Order Model to Data
 fit2 <- fit_mr(data=delay, col_value = "pc", 

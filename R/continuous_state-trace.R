@@ -66,21 +66,6 @@ cmr <- function (data,
   
   cl <- match.call()
   
-  if (missing(partial)) {
-    partial = list()
-  } else {
-    warning("partial not yet implemented")
-    partial = list()
-    ## if (!is.list(partial)) {partial = adj2list(partial)}
-  }
-  
-  # data_prep <- prep_data(data = data, 
-  #                   col_value = col_value, 
-  #                   col_participant = col_participant, 
-  #                   col_dv = col_dv, 
-  #                   col_within = col_within, 
-  #                   col_between = col_between, 
-  #                   return_list = FALSE)
   data_list <- prep_data(data = data, 
                     col_value = col_value, 
                     col_participant = col_participant, 
@@ -88,11 +73,27 @@ cmr <- function (data,
                     col_within = col_within, 
                     col_between = col_between)
   
+  stats <- sta_stats(data = data, 
+                     col_value = col_value, 
+                     col_participant = col_participant, 
+                     col_dv = col_dv, 
+                     col_within = col_within, 
+                     col_between = col_between)
+  stats_df <- summary(stats)
+  
+  adj_mat <- make_adj_matrix(
+    data = data,
+    data_list = data_list, 
+    col_within = col_within, 
+    col_between = col_between,
+    stats_df = stats_df,
+    partial = partial
+  )
   
   fit_out <- staCMRx(
     data_list,
     model = NULL,
-    E = partial,
+    E = adj_mat,
     shrink = shrink,
     tolerance = tolerance,
     proc = -1,
@@ -100,20 +101,14 @@ cmr <- function (data,
   )
   
   ## prepare output from fit object
-  stats <- sta_stats(data = data, 
-                     col_value = col_value, 
-                     col_participant = col_participant, 
-                     col_dv = col_dv, 
-                     col_within = col_within, 
-                     col_between = col_between)
-  estimate <- summary(stats)[,1:4]
+  estimate <- stats_df[,1:4]
   estimate[[1]] <- fit_out$x[[1]]
   estimate[[2]] <- fit_out$x[[2]]
   
   out <- list(
     estimate = estimate,
     fit = fit_out$fval,
-    partial = partial
+    partial = adj_mat
   )
   attr(out, "value_fit") <- "SSE"  ## sum of squared errors
   
@@ -135,10 +130,124 @@ cmr <- function (data,
     # approx = approximation algorithm; F = no; T = yes
     test_out <- jCMRfitsx(nsample = nsample,
                           y = data_list, 
-                          model = model, E = partial, shrink = shrink,
+                          model = model, 
+                          E = adj_mat, 
+                          shrink = shrink,
                           proc = proc, cheapP = cheapP, approximate = approx, 
                           mrTol = mrTol, seed = seed) # call java program
     test_out$fits[which(test_out$fits <= tolerance)] = 0;
+    # output:
+    # p = empirical p-value
+    # datafit = observed fit of monotonic (1D) model
+    # fits = nsample vector of fits of Monte Carlo samples (it is against this
+    # distribution that datafit is compared to calculate p)
+    
+    out$p <- test_out$p
+    out$fit_null_dist <- test_out$fits
+    attr(out, "nsample") <- nsample
+    
+  } else {
+    out$p <- NA
+    out$fit_null_dist <- NA
+    attr(out, "nsample") <- 0
+  }
+  
+  
+  out$shrinkage <- fit_out$shrinkage
+  out$data_list <- data_list
+  out$call <- cl
+  
+  class(out) <- "stacmr"
+  return (out)
+}
+
+
+mr <- function (data, 
+                col_value, col_participant, col_dv, 
+                col_within, col_between, 
+                partial, 
+                test = TRUE,
+                nsample = 1000, 
+                shrink = -1, 
+                approx = FALSE, 
+                tolerance = 1e-4) {
+  # wrapper function for staCMRx and jCMRfitsx
+  # Fit and Test Multidimensional CMR
+  # data is cell array of data or structured output from staSTATS 
+  # partial will be transformed into partial order
+  # shrink is parameter to control shrinkage of covariance matrix;
+  # 0 = no shrinkage; 1 = diagonal matrix; -1 = calculate optimum
+  # returns:
+  # x = best fitting CMR values to y-means
+  # fval = fit statistic
+  # shrinkage = estimated shrinkage of covariance matrix
+  # approx = F for full algorithm; T = approximate algorithm
+  
+  cl <- match.call()
+  
+  data_list <- prep_data(data = data, 
+                    col_value = col_value, 
+                    col_participant = col_participant, 
+                    col_dv = col_dv, 
+                    col_within = col_within, 
+                    col_between = col_between)
+  
+  stats <- sta_stats(data = data, 
+                     col_value = col_value, 
+                     col_participant = col_participant, 
+                     col_dv = col_dv, 
+                     col_within = col_within, 
+                     col_between = col_between)
+  stats_df <- summary(stats)
+  
+  adj_mat <- make_adj_matrix(
+    data = data,
+    data_list = data_list, 
+    col_within = col_within, 
+    col_between = col_between,
+    stats_df = stats_df,
+    partial = partial
+  )
+  
+  y <- staSTATS (data_list, shrink)
+  
+  nvar = length(y)
+  shrinkage = matrix(0, length(y[[1]]$shrinkage), nvar)
+  for (ivar in 1:nvar) {shrinkage[,ivar] = y[[ivar]]$shrinkage}
+
+  # do MR for each dependent variable
+  xPrime = vector("list", nvar)
+  fit = matrix(0, nvar, 1)
+  for (ivar in 1:nvar) {
+    out = jMR (y[[ivar]]$means, y[[ivar]]$weights, adj2list(adj_mat))
+    xPrime[[ivar]] = out$x
+    fit[ivar] = out$fval
+  }
+  fval = sum(fit)
+  if (fval < tolerance) {fval = 0} # round down
+  
+  for (i in 1:nvar) {xPrime[[i]]=matrix(xPrime[[i]],length(xPrime[[i]]),1)}
+  fit_out = list(xPrime, fval, shrinkage)
+  names(fit_out) = c("x", "fval", "shrinkage")
+  
+  ## prepare output from fit object
+  estimate <- stats_df[,1:4]
+  estimate[[1]] <- fit_out$x[[1]]
+  estimate[[2]] <- fit_out$x[[2]]
+  
+  out <- list(
+    estimate = estimate,
+    fit = fit_out$fval,
+    partial = adj_mat
+  )
+  attr(out, "value_fit") <- "SSE"  ## sum of squared errors
+  
+  if (test) {
+    
+    test_out <- jMRfits(nsample = nsample, 
+                        y = y, E = adj2list(adj_mat),
+                        shrink = shrink)
+    test_out$fits[which(test_out$fits <= tolerance)] <- 0;
     # output:
     # p = empirical p-value
     # datafit = observed fit of monotonic (1D) model
