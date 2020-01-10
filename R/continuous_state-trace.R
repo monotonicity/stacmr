@@ -29,8 +29,9 @@
 #' @param test logical. If `TRUE` (the default) *p*-value is calculated based
 #'   double-bootsrap procedure with `nsamples`. If `FALSE`, no test statistic is
 #'   approximated and model is only fit.
-#' @param nsample number of Monte Carlo samples (default is 1000, but about
-#'   10000 is probably better). Only used if `test = TRUE`.
+#' @param nsample number of bootstrap samples to empirically approximate the
+#'   null distribution (default is 1000, but about 10000 is probably better).
+#'   Only used if `test = TRUE`.
 #' @param  shrink Shrinkage parameter (see [sta_stats]). Default calculates
 #'   optimum amount of shrinkage.
 #' @param approx `FALSE` (the default) uses full algorithm, `TRUE` uses an
