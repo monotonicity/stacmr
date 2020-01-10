@@ -1,3 +1,10 @@
+- Should be a separate package from stacmr but have 4 similar user facing functions (maybe same name) for SDA of individual-level data
+- also expose aggregated data functionality to the user (not only individual-level trial) in this case we have 4 additional functions that accept data in slightly different way (maybe simply add an a to beginning function name: scmr, smr, sbcmr, smr). The columns will be:
+  - col_value (or col_success and col_failure)
+  - col_sd
+  - col_n
+  - col_condition (which combines between and within conditions again)
+  - default should be approx TRUE
 - model defines structure of problem as a model matrix.
   - number of rows is number of DVs
   - number of columns is number of latent variables

@@ -1,4 +1,11 @@
 
+Functions we want exported:
+- cmr, mr
+- bcmr, bmr
+- sta_stats
+- state_trace and plot_null
+- summary and print method for stacmr objects
+
 - between and within argument should accept several column names which are combined as a lexicographic order.
 - both col_between and col_within should be optional (i.e., if none, only one level of factor)
 - cmr() function should do both fitting and testing with argument test = TRUE as default (if false, only fitting, but no testing).
@@ -13,6 +20,7 @@
     - list(delay = "`no delay` = `delay`", block = "auto")
     - list(delay = "auto", block = "B1 < B2 = B3 < B4")
     - symbolic specification only allows less-than (which means less-than or equal) and equality.
+- In binary case, participant column has to be optional.
 - if data is in summary statistics format (need to check how this works with the new format), parametric bootstrap is used in contrast to the non-parametric bootstrap implemented by default ()
 
 ## Example Session
