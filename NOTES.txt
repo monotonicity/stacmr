@@ -22,6 +22,7 @@ Functions we want exported:
     - symbolic specification only allows less-than (which means less-than or equal) and equality.
 - In binary case, participant column has to be optional.
 - if data is in summary statistics format (need to check how this works with the new format), parametric bootstrap is used in contrast to the non-parametric bootstrap implemented by default ()
+- check what happens with missing values on within-subject factors
 
 ## Example Session
 obj <- cmr(...)/mr(...)
