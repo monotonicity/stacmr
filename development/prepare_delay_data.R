@@ -9,8 +9,8 @@ colnames(delay) <- c("participant", "condition", "dv",
 delay2 <- delay %>% 
   mutate(participant = factor(participant),
          delay = factor(condition, 
-                        levels = 1:2, 
-                        labels = c("no delay", "delay")),
+                        levels = c(2, 1), 
+                        labels = c("delay", "no delay")),
          structure = factor(dv, 
                             levels = 1:2,
                             labels = c("rule-based", 
@@ -27,7 +27,7 @@ delay <- delay2 %>%
 str(delay)
 # 'data.frame':	520 obs. of  5 variables:
 #  $ participant: Factor w/ 130 levels "1","2","3","4",..: 1 2 3 4 5 6 7 8 9 10 ...
-#  $ delay      : Factor w/ 2 levels "no delay","delay": 2 1 1 2 2 1 1 2 2 2 ...
+#  $ delay      : Factor w/ 2 levels "delay","no delay": 1 2 2 1 1 2 2 1 1 1 ...
 #  $ structure  : Factor w/ 2 levels "rule-based","information-integration": 1 2 1 2 1 2 1 2 1 1 ...
 #  $ block      : Factor w/ 4 levels "B1","B2","B3",..: 1 1 1 1 1 1 1 1 1 1 ...
 #  $ pc         : num  0.338 0.287 0.525 0.35 0.237 ...
