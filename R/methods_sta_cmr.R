@@ -1,4 +1,5 @@
 
+#' @export
 print.sta_cmr <- function (x, 
                           digits = max(3, getOption("digits") - 3), 
                           varnames = TRUE,
@@ -30,6 +31,7 @@ print.sta_cmr <- function (x,
   invisible(x)
 }
 
+#' @export
 summary.sta_cmr <- function(object, 
                            digits = max(3, getOption("digits") - 3), 
                            ...) {
