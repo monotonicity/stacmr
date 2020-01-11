@@ -66,6 +66,9 @@ make_adj_matrix <- function(data, data_list,
         if (parsed_order[j,"operator"] == "<") {
           adj_mat[cbind(i1, i2)] <- 1
         }
+        if (parsed_order[j,"operator"] == ">") {
+          adj_mat[cbind(i2, i1)] <- 1
+        }
         if (parsed_order[j,"operator"] == "=") {
           adj_mat[cbind(i1, i2)] <- 1
           adj_mat[cbind(i2, i1)] <- 1
@@ -79,7 +82,7 @@ make_adj_matrix <- function(data, data_list,
 }
 
 parse_partial_order <- function(symbolic_order, 
-                                operators = c("=", "<")) {
+                                operators = c("=", "<", ">")) {
   vars <- strsplit(symbolic_order, paste(operators, collapse = "|"))[[1]]
   vars <- parse(text = vars)
   
