@@ -161,7 +161,7 @@ cmr <- function (data,
   return (out)
 }
 
-
+#' @export
 mr <- function (data, 
                 col_value, col_participant, col_dv, 
                 col_within, col_between, 
@@ -209,9 +209,7 @@ mr <- function (data,
     partial = partial
   )
   
-  y <- staSTATS (data_list, shrink)
-  
-  nvar = length(y)
+  nvar = length(stats)
   shrinkage = matrix(0, length(y[[1]]$shrinkage), nvar)
   for (ivar in 1:nvar) {shrinkage[,ivar] = y[[ivar]]$shrinkage}
 
@@ -219,7 +217,7 @@ mr <- function (data,
   xPrime = vector("list", nvar)
   fit = matrix(0, nvar, 1)
   for (ivar in 1:nvar) {
-    out = jMR (y[[ivar]]$means, y[[ivar]]$weights, adj2list(adj_mat))
+    out = jMR (stats[[ivar]]$means, stats[[ivar]]$weights, adj2list(adj_mat))
     xPrime[[ivar]] = out$x
     fit[ivar] = out$fval
   }
@@ -245,7 +243,7 @@ mr <- function (data,
   if (test) {
     
     test_out <- jMRfits(nsample = nsample, 
-                        y = y, E = adj2list(adj_mat),
+                        y = data_list, E = adj2list(adj_mat),
                         shrink = shrink)
     test_out$fits[which(test_out$fits <= tolerance)] <- 0;
     # output:
@@ -271,119 +269,6 @@ mr <- function (data,
   
   class(out) <- "stacmr"
   return (out)
-}
-
-
-#' @rdname continuous_cmr 
-#' @export
-fit_mr <- function(data, 
-                   col_value, col_participant, col_dv, col_within, 
-                   col_between,
-                   partial = list(), shrink=-1,
-                   tolerance = 1e-4) {
-  # function [xPrime, fit, shrinkage] = staMR (data, partial, shrink)
-  # fits monotonic regression model to data according to partial order
-  # data is list of lists of data or structured output from staSTATS
-  # partial is partial order in list format
-  # shrink is parameter to control shrinkage of covariance matrix;
-  # 0 = no shrinkage; 1 = diagonal matrix; -1 = calculate optimum
-  # returns:
-  #   x = best fitting MR values to y-means
-  #   f = total fit statistic
-  #   shrinkage = shrinkage from applying staSTATS
-  # *************************************************************************
-  # modified from matlab 13 September 2016
-  # *************************************************************************
-  #
-  
-  ## bring data in list format
-  data <- prep_data(data = data, 
-                    col_value = col_value, 
-                    col_participant = col_participant, 
-                    col_dv = col_dv, 
-                    col_within = col_within, 
-                    col_between = col_between)
-  y = staSTATS (data, shrink) # get stats
-  
-  # # get stats from data (depending on its form)
-  # if (is(data,"data.frame")) {
-  #   y = gen2list (data) # convert from general format
-  #   y = staSTATS (y, shrink) # get stats
-  # } else if (is.null(data[[1]]$means)) {y = staSTATS(data, shrink) # in list form, get stats
-  # } else {y = data} # already in stats form
-  
-  # convert partial order to list if in adjacency matrix form
-  if (is(partial,"matrix")) {partial = adj2list(partial)}
-  
-  # extract shrinkage parameters (for information only)
-  nvar = length(y)
-  shrinkage = matrix(0, length(y[[1]]$shrinkage), nvar)
-  for (ivar in 1:nvar) {shrinkage[,ivar] = y[[ivar]]$shrinkage}
-
-  # do MR for each dependent variable
-  xPrime = vector("list", nvar)
-  fit = matrix(0, nvar, 1)
-  for (ivar in 1:nvar) {
-    out = jMR (y[[ivar]]$means, y[[ivar]]$weights, partial)
-    xPrime[[ivar]] = out$x
-    fit[ivar] = out$fval
-  }
-  fval = sum(fit)
-  if (fval < tolerance) {fval = 0} # round down
-  
-  for (i in 1:nvar) {xPrime[[i]]=matrix(xPrime[[i]],length(xPrime[[i]]),1)}
-  output = list(xPrime, fval, shrinkage)
-  names(output) = c("x", "fval", "shrinkage")
-  
-  return(output)
-}
-
-#' @rdname continuous_cmr 
-#' @param nsample no. of Monte Carlo samples (about 10000 is good)
-#' @export
-test_mr <- function (data, 
-                   col_value, col_participant, col_dv, col_within, 
-                   col_between, 
-                   partial = list(), nsample=1, shrink=-1,
-                   tolerance = 1e-4) {
-# input:
-  # nsample = no. of Monte Carlo samples (about 10000 is good)
-  # data = data structure (cell array or general)
-  # partial = optional partial order model e.g. E={[1 2] [3 4 5]} indicates that
-  # condition 1 <= condition 2 and condition 3 <= condition 4 <= condition 5
-  # default = none (empty)
-  # shrink is parameter to control shrinkage of covariance matrix (if input is not stats form);
-  # 0 = no shrinkage; 1 = diagonal matrix; -1 = calculate optimum, default = -1
-# output:
-  # p = empirical p-value
-  # datafit = observed fit of partial order model
-  # fits = nsample vector of fits of Monte Carlo samples (it is against this
-  # distribution that datafit is compared to calculate p)
-  # *************************************************************************
-  # converted from matlab 7 February 2018
-  # *************************************************************************
-  
-  ## bring data in list format
-  y <- prep_data(data = data, 
-                    col_value = col_value, 
-                    col_participant = col_participant, 
-                    col_dv = col_dv, 
-                    col_within = col_within, 
-                    col_between = col_between)
-
-  # if (is(data,"data.frame")) {
-  #   y = gen2list (data) # convert from general format to list format
-  # } else {y = data} 
-  
-  nvar =length(y)
-  if (!is.list(partial)) {partial = adj2list(partial)} # convert from adjacency matrix to list
-  
-  output = jMRfits(nsample, y, partial, shrink);
-  #output = jCMRfitsx(nsample, y, model, partial, shrink) # call java program
-  
-  output$fits[which(output$fits <= tolerance)] = 0;
-  
-  return (output)
 }
 
 

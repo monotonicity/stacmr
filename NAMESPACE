@@ -3,7 +3,6 @@
 S3method(print,sta_stats)
 S3method(summary,sta_stats)
 export(cmr)
-export(fit_mr)
+export(mr)
 export(sta_stats)
-export(test_mr)
 import(rJava)

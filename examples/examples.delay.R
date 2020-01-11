@@ -124,6 +124,36 @@ mr_d6 <- mr(
 )
 summary(mr_d6)
 
+mr_d7 <- mr(
+  data = delay, 
+  col_value = "pc", 
+  col_participant = "participant",
+  col_dv = "structure", 
+  col_within = "block", 
+  col_between = "delay", 
+  nsample = 1e4, 
+  partial = list(
+    delay = "`no delay` < delay",
+    block = "B1 < B2 < B3 < B4"
+  )
+)
+summary(mr_d7)
+
+mr_d6 <- mr(
+  data = delay, 
+  col_value = "pc", 
+  col_participant = "participant",
+  col_dv = "structure", 
+  col_within = "block", 
+  col_between = "delay", 
+  nsample = 1e4, 
+  partial = list(
+    delay = "delay = `no delay`",
+    block = "B1 < B2 < B3 < B4"
+  )
+)
+summary(mr_d6)
+
 
 ### OLD STUFF BELOW: CHANGE PLEASE
 
