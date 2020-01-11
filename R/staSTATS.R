@@ -44,7 +44,7 @@
 #' @references Ledoit, O. & Wolf, M. (2004). Honey, I shrunk the sample
 #'   covariance matrix. *The Journal of Portfolio Management*, 30(4), 110-119.
 #' 
-#' @inheritParams fit_cmr
+#' @inheritParams cmr
 #' 
 #' @export
 sta_stats <- function(data, 

@@ -16,6 +16,24 @@ sta_stats(
 )
 }
 \arguments{
+\item{data}{\code{data.frame} containing data aggregated by participant and
+relevant variables in columns.}
+
+\item{col_value}{\code{character}. Name of column in \code{data} containing numerical
+values for analysis (i.e., responses).}
+
+\item{col_participant}{\code{character}. Name of column in \code{data} containing the
+participant identifier.}
+
+\item{col_dv}{\code{character}. Name of column in \code{data} containing the dependent
+variable(s) spanning the state-trace axes.}
+
+\item{col_within}{\code{character}, optional. Name of column(s) in \code{data}
+containing the within-subjects variables.}
+
+\item{col_between}{\code{character}, optional. Name of column(s) in \code{data}
+containing the between-subjects variables.}
+
 \item{shrink}{numeric indicating amount of shrinkage to apply to the
 estimated covariance matrix. Generally, the covariance matrix needs to be
 shrunk during the bootstrap cycle to avoid ill-conditioning. If \code{shrink = 0} then no shrinkage is applied. If \code{shrink = 1} then maximum shrinkage is
