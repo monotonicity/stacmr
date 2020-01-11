@@ -4,12 +4,11 @@ make_adj_matrix <- function(data, data_list,
                             stats_df, partial) {
   dimname <- paste(make.names(stats_df$within), make.names(stats_df$between), 
              sep = ":")
+  adj_mat <- matrix(0, nrow = length(dimname), ncol = length(dimname), 
+                      dimnames = list(dimname, dimname))
   
   if (missing(partial)) {
-    return(
-      matrix(0, nrow = length(dimname), ncol = length(dimname), 
-             dimnames = list(dimname, dimname))
-    )
+    return(adj_mat)
   } 
   
   if (missing(col_within)) {
@@ -28,7 +27,7 @@ make_adj_matrix <- function(data, data_list,
   )
   dims_adj <- expand.grid(levels_cols)
   
-  if (partial[1] == "auto") {
+  if (!is.list(partial) && (partial[1] == "auto")) {
     partial <- as.list(rep("auto", length(all_cols)))
     names(partial) <- all_cols
   }
@@ -36,9 +35,6 @@ make_adj_matrix <- function(data, data_list,
   if (is.list(partial)) {
     if (is.null(names(partial))) 
       stop("List of partial orders must be named!", call. = FALSE)
-    adj_mat <- matrix(0, nrow = length(dimname), ncol = length(dimname), 
-                      dimnames = list(dimname, dimname))
-    
     for (i in seq_along(partial)) {
       if (!(names(partial)[i] %in% all_cols)) {
         warning("No column '", names(partial)[i], 
@@ -63,10 +59,15 @@ make_adj_matrix <- function(data, data_list,
       }
       parsed_order <- parse_partial_order(partial[[i]])
       for (j in seq_len(nrow(parsed_order))) {
-        
-        rs <- which(dims_adj[[names(partial)[i]]] == parsed_order[j,1])
-        cs <- which(dims_adj[[names(partial)[i]]] == parsed_order[j,2])
-        adj_mat[cbind(rs, cs)] <- 1
+        i1 <- which(dims_adj[[names(partial)[i]]] == parsed_order[j,1])
+        i2 <- which(dims_adj[[names(partial)[i]]] == parsed_order[j,2])
+        if (parsed_order[j,"operator"] == "<") {
+          adj_mat[cbind(i1, i2)] <- 1
+        }
+        if (parsed_order[j,"operator"] == "=") {
+          adj_mat[cbind(i1, i2)] <- 1
+          adj_mat[cbind(i2, i1)] <- 1
+        }
       }
     }
     return(adj_mat)
