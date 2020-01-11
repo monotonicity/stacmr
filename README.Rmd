@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
   [![Travis build status](https://travis-ci.org/monotonicity/stacmr.svg?branch=master)](https://travis-ci.org/monotonicity/stacmr)
 <!-- badges: end -->
 
-The goal of stacmr is to ...
+The goal of `stacmr` is to provide functionality for state-trace analysis via conjoint monotonic regression. The main function for this is `cmr()`. In addition, it provides functionality for fitting monotonic regression models with function `mr()`.
 
 ## Installation
 
@@ -44,33 +44,45 @@ library(stacmr)
 data(delay)
 str(delay, width = 78, strict.width = "cut")
 
-stats <- sta_stats(data=delay, col_value = "pc", 
-          col_participant = "participant",
-          col_dv = "structure", 
-          col_within = "block", 
-          col_between = "delay")
+stats <- sta_stats(
+  data = delay, 
+  col_value = "pc", 
+  col_participant = "participant",
+  col_dv = "structure", 
+  col_within = "block", 
+  col_between = "delay"
+)
 stats
-str(stats)
 
 
-### Fit CMR State-Trace Analysis Model
-fit1 <- fit_cmr(data=delay, col_value = "pc", 
-                col_participant = "participant",
-                col_dv = "structure", 
-                col_within = "block", 
-                col_between = "delay")
-cbind(fit1$x[[1]], fit1$x[[2]])
-fit1$fval
-fit1$shrinkage
+### cmr() fits conjoint monotonic regression for state-trace analysis
+## Fit and test CMR State-Trace Analysis Model
+st_d1 <- cmr(
+  data = delay, 
+  col_value = "pc", 
+  col_participant = "participant",
+  col_dv = "structure", 
+  col_within = "block", 
+  col_between = "delay", 
+  nsample = 1e4
+)
+st_d1  ## basic information about conjoint-monotonic model
 
+summary(st_d1)  ## basic information plus estimated cell means
 
-### Test CMR State-Trace Analysis
-test1 <- test_cmr(data=delay, col_value = "pc", 
-                  col_participant = "participant",
-                  col_dv = "structure", 
-                  col_within = "block", 
-                  col_between = "delay")
-test1
+### cmr() also accepts partial order. 
+## CMR model is tested against MR model with partial order 
+st_d3 <- cmr(
+  data = delay, 
+  col_value = "pc", 
+  col_participant = "participant",
+  col_dv = "structure", 
+  col_within = "block", 
+  col_between = "delay", 
+  partial = "auto"
+)
+st_d3
+summary(st_d3)
 ```
 
 
