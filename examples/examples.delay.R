@@ -3,6 +3,8 @@ library("stacmr")
 
 ## load data from Exp. 1 of Dunn, Newell, & Kalish (2012)
 data(delay)
+delay$delay <- factor(delay$delay, levels = c("delay", "no delay"))
+#delay$delay <- factor(delay$delay, levels = c("no delay", "delay"))
 str(delay, width = 78, strict.width = "cut")
 # 'data.frame':	520 obs. of  5 variables:
 #  $ participant: Factor w/ 130 levels "1","2","3","4",..: 1 2 3 4 5 6 7 8 9 1..
@@ -91,6 +93,37 @@ mr_d4 <- mr(
   partial = "auto"
 )
 mr_d4
+
+mr_d5 <- mr(
+  data = delay, 
+  col_value = "pc", 
+  col_participant = "participant",
+  col_dv = "structure", 
+  col_within = "block", 
+  col_between = "delay", 
+  nsample = 1e4, 
+  partial = list(
+    delay = "delay < `no delay`",
+    block = "B1 < B2 < B3 < B4"
+  )
+)
+mr_d5
+
+mr_d6 <- mr(
+  data = delay, 
+  col_value = "pc", 
+  col_participant = "participant",
+  col_dv = "structure", 
+  col_within = "block", 
+  col_between = "delay", 
+  nsample = 1e4, 
+  partial = list(
+    delay = "delay = `no delay`",
+    block = "B1 < B2 < B3 < B4"
+  )
+)
+summary(mr_d6)
+
 
 ### OLD STUFF BELOW: CHANGE PLEASE
 
