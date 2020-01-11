@@ -4,6 +4,8 @@ pkgload::load_all()
 
 devtools::document()
 
+devtools::test()
+
 library("usethis")
 ### packages
 use_package("magic")
@@ -19,8 +21,8 @@ use_readme_rmd()
 library("testthat")
 use_testthat()
 use_test("monotonic_regression")
-
 use_test("conjoint_monotonic_regression")
+use_test("partial_order_specification")
 
 ### prepare data
 
