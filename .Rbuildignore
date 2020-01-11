@@ -1,3 +1,5 @@
+NOTES.txt
+NOTES_SDA.txt
 examples
 ^.*\.Rproj$
 ^\.Rproj\.user$
