@@ -52,9 +52,11 @@ make_adj_matrix <- function(data, data_list,
           warning("None factor condition '",  names(partial)[i], 
                   "' uses alphabetic order for automatic partial order.", 
               call. = FALSE)
-          rel_data[[i]] <- factor(rel_data[[i]])
+          rel_data[[i]] <- factor(rel_data[[names(partial)[i]]])
         }
-        partial[[i]] <- paste(paste0("`", levels(rel_data[[i]]), "`"), 
+        partial[[i]] <- paste(paste0("`", 
+                                     levels(rel_data[[names(partial)[i]]]), 
+                                     "`"), 
                               collapse = " < ")
       }
       parsed_order <- parse_partial_order(partial[[i]])
