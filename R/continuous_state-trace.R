@@ -159,7 +159,7 @@ cmr <- function (data,
   out$data_list <- data_list
   out$call <- cl
   
-  class(out) <- "stacmr"
+  class(out) <- "sta_cmr"
   return (out)
 }
 
@@ -269,7 +269,7 @@ mr <- function (data,
   out$data_list <- data_list
   out$call <- cl
   
-  class(out) <- "stacmr"
+  class(out) <- "sta_cmr"
   return (out)
 }
 

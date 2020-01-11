@@ -1,5 +1,5 @@
 
-print.stacmr <- function (x, 
+print.sta_cmr <- function (x, 
                           digits = max(3, getOption("digits") - 3), 
                           varnames = TRUE,
                           ...) {
@@ -30,7 +30,7 @@ print.stacmr <- function (x,
   invisible(x)
 }
 
-summary.stacmr <- function(object, 
+summary.sta_cmr <- function(object, 
                            digits = max(3, getOption("digits") - 3), 
                            ...) {
   
