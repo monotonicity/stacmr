@@ -18,6 +18,12 @@ print.stacmr <- function (x,
       format(x$fit, digits = digits), 
       "\n", 
       sep = "")
+  if (deparse(x$call[[1]]) == "cmr") {
+    cat("Fit difference to MR model (", attr(x, "value_fit"), "): ", 
+      format(x$fit_diff, digits = digits), 
+      "\n", 
+      sep = "")
+  }
   cat("p-value (based on", attr(x, "nsample"), "samples):",  
       x$p, "\n")
   cat("\n")

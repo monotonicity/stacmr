@@ -93,7 +93,7 @@ cmr <- function (data,
   fit_out <- staCMRx(
     data_list,
     model = NULL,
-    E = adj_mat,
+    E = adj2list(adj_mat),
     shrink = shrink,
     tolerance = tolerance,
     proc = -1,
@@ -131,7 +131,7 @@ cmr <- function (data,
     test_out <- jCMRfitsx(nsample = nsample,
                           y = data_list, 
                           model = model, 
-                          E = adj_mat, 
+                          E = adj2list(adj_mat), 
                           shrink = shrink,
                           proc = proc, cheapP = cheapP, approximate = approx, 
                           mrTol = mrTol, seed = seed) # call java program
@@ -143,11 +143,13 @@ cmr <- function (data,
     # distribution that datafit is compared to calculate p)
     
     out$p <- test_out$p
+    out$fit_diff <- test_out$datafit
     out$fit_null_dist <- test_out$fits
     attr(out, "nsample") <- nsample
     
   } else {
     out$p <- NA
+    out$fit_diff <- NA
     out$fit_null_dist <- NA
     attr(out, "nsample") <- 0
   }
