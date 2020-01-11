@@ -3,7 +3,8 @@ print.stacmr <- function (x,
                           digits = max(3, getOption("digits") - 3), 
                           varnames = TRUE,
                           ...) {
-  cat("\nCMR fit to ", nrow(x$estimate), " data points with call:\n", 
+  cat("\n", toupper(deparse(x$call[[1]])), 
+      " fit to ", nrow(x$estimate), " data points with call:\n", 
       paste(deparse(x$call), sep = "\n", collapse = "\n"), "\n\n",
       sep = "")
   
