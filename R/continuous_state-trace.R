@@ -210,8 +210,8 @@ mr <- function (data,
   )
   
   nvar = length(stats)
-  shrinkage = matrix(0, length(y[[1]]$shrinkage), nvar)
-  for (ivar in 1:nvar) {shrinkage[,ivar] = y[[ivar]]$shrinkage}
+  shrinkage = matrix(0, length(stats[[1]]$shrinkage), nvar)
+  for (ivar in 1:nvar) {shrinkage[,ivar] = stats[[ivar]]$shrinkage}
 
   # do MR for each dependent variable
   xPrime = vector("list", nvar)
