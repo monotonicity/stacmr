@@ -58,9 +58,22 @@ sta_stats <- function(data,
                  col_within = col_within, 
                  col_between = col_between, 
                  return_list = FALSE)
-    staSTATS(y, shrink=shrink, 
-             varnames = attr(y, "names_within"), 
-             warning=warning)
+    
+    if (!is.null(attr(data, "names_within"))) {
+      staSTATS(
+        data = y,
+        shrink = shrink,
+        varnames = attr(y, "names_within"),
+        warning = warning
+      )
+    } else {
+      staSTATS(
+        data = y,
+        shrink = shrink,
+        warning = warning
+      )
+    }
+
 }
 
 
