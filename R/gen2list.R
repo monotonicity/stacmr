@@ -62,7 +62,9 @@ gen2list = function (data=NULL, varnames) {
     varnames <- attr(data, "names_within")
   }
   if (!missing(varnames)) {
-    colnames(data)[4:ncol(data)]=varnames
+    if (length(varnames) == length(4:ncol(data))) {
+      colnames(data)[4:ncol(data)]=varnames
+    }
   }
   group = data[,2]; ugroup = sort(unique(group)); ngroup = length(ugroup)
   var = data[,3]; uvar = sort(unique(var)); nvar = length(uvar)
@@ -143,7 +145,7 @@ prep_data <- function(data, col_value, col_participant, col_dv,
   if (missing(col_within)) {
     col_within <- "___NEWWNCOLSTACMR__"
     data[[col_within]] <- "y"
-    varnames <- c(varnames, within = "y")
+    varnames <- c(varnames, within = NULL)
   } else {
     varnames <- c(varnames, within = paste(col_within, collapse = ":"))
     data <- check_col(data, col_within, TRUE)
@@ -153,7 +155,7 @@ prep_data <- function(data, col_value, col_participant, col_dv,
   if (missing(col_between)) {
     col_between <- "___NEWCOLSTACMR__"
     data[[col_between]] <- 1L
-    varnames <- c(varnames, between = "1")
+    varnames <- c(varnames, between = NULL)
   } else {
     varnames <- c(varnames, between = paste(col_between, collapse = ":"))
     data <- check_col(data, col_between, TRUE)

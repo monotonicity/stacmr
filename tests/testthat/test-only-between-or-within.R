@@ -119,3 +119,29 @@ test_that("Only Between-Subjects Data is Supported", {
   expect_s3_class(mod1, "sta_cmr")
   
 })
+
+test_that("Only Between-Subjects Data is Supported", {
+  
+  data(delay)
+  
+  stats <- sta_stats(
+    data = delay, 
+    col_value = "pc", 
+    col_participant = "participant",
+    col_dv = "structure", 
+    col_within = "block"
+  )
+  
+  expect_s3_class(stats, "sta_stats")
+  
+  st_delay <- cmr(
+    data = delay, 
+    col_value = "pc", 
+    col_participant = "participant",
+    col_dv = "structure", 
+    col_within = "block", 
+    nsample = 10, 
+    partial = "auto" 
+  )
+  expect_s3_class(st_delay, "sta_cmr")
+})
